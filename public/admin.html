@@ -2,12 +2,12 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <title>لوحة الإدارة - المتجر</title>
+    <title>لوحة الإدارة - Meshari Tech Store</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
 
   <body class="min-h-screen bg-slate-900 text-white">
-    <!-- ===================== HEADER ===================== -->
+    <!-- HEADER -->
     <header class="bg-slate-800 px-6 py-4 flex items-center justify-between">
       <h1 class="text-xl font-bold">لوحة الإدارة</h1>
 
@@ -28,7 +28,7 @@
     </header>
 
     <main class="max-w-6xl mx-auto py-8 px-4 space-y-8">
-      <!-- ============ ADD PRODUCT =============== -->
+      <!-- إضافة منتج جديد -->
       <section class="bg-slate-800 rounded-2xl p-6 shadow">
         <h2 class="text-lg font-semibold mb-4">إضافة منتج جديد</h2>
 
@@ -54,17 +54,9 @@
           </div>
 
           <div>
-            <label class="block mb-1 text-sm">القسم</label>
+            <label class="block mb-1 text-sm">القسم (مثال: laptops)</label>
             <input
               name="category"
-              class="w-full rounded-lg px-3 py-2 bg-slate-700 border border-slate-600"
-            />
-          </div>
-
-          <div>
-            <label class="block mb-1 text-sm">اسم الصورة</label>
-            <input
-              name="image"
               class="w-full rounded-lg px-3 py-2 bg-slate-700 border border-slate-600"
             />
           </div>
@@ -90,21 +82,21 @@
         </form>
       </section>
 
-      <!-- ================= PRODUCT LIST ================= -->
+      <!-- قائمة المنتجات -->
       <section class="bg-slate-800 rounded-2xl p-6 shadow">
         <h2 class="text-lg font-semibold mb-4">المنتجات الحالية</h2>
         <div id="adminProductsList" class="space-y-3"></div>
       </section>
 
-      <!-- ================= USERS LIST ================= -->
+      <!-- المستخدمون -->
       <section class="bg-slate-800 rounded-2xl p-6 shadow">
-        <h2 class="text-lg font-semibold mb-4">المستخدمون</h2>
+        <h2 class="text-lg font-semibold mb-4">المستخدمون المسجّلون</h2>
         <div id="usersList" class="space-y-2 text-sm"></div>
       </section>
     </main>
 
     <script>
-      /** ===================== AUTH ===================== */
+      // ===== أدوات المستخدم الحالي (من login.html) =====
       function getCurrentUser() {
         try {
           return JSON.parse(localStorage.getItem("currentUser"));
@@ -115,34 +107,41 @@
 
       function requireAdmin() {
         const user = getCurrentUser();
-        if (!user || !user.isAdmin) {
+        if (!user || user.role !== "admin") {
           window.location.href = "login.html";
         }
         return user;
       }
 
       function setupHeader(user) {
-        document.getElementById("adminName").textContent =
-          "مرحباً، " + user.name + " (أدمن)";
+        const nameSpan = document.getElementById("adminName");
+        const logoutBtn = document.getElementById("logoutBtn");
 
-        document.getElementById("logoutBtn").onclick = () => {
-          localStorage.removeItem("currentUser");
-          window.location.href = "login.html";
-        };
+        if (nameSpan) {
+          nameSpan.textContent = "مرحباً، " + user.name + " (أدمن)";
+        }
+
+        if (logoutBtn) {
+          logoutBtn.onclick = () => {
+            localStorage.removeItem("currentUser");
+            window.location.href = "login.html";
+          };
+        }
       }
 
-      /** ===================== LOAD PRODUCTS ===================== */
+      // ===== تحميل المنتجات =====
       async function loadProducts() {
         const container = document.getElementById("adminProductsList");
+        if (!container) return;
 
         const res = await fetch("/api/admin/products");
         const products = await res.json();
 
         container.innerHTML = "";
 
-        if (products.length === 0) {
+        if (!products.length) {
           container.innerHTML =
-            '<p class="text-slate-400">لا يوجد منتجات بعد.</p>';
+            '<p class="text-slate-400 text-sm">لا يوجد منتجات بعد.</p>';
           return;
         }
 
@@ -154,10 +153,14 @@
           div.innerHTML = `
             <div>
               <div class="font-semibold">${p.name}</div>
-              <div class="text-slate-300">${p.price} ر.س – ${p.category}</div>
+              <div class="text-slate-300">
+                ${p.price} ر.س – ${
+            p.displayCategory || p.category || "غير مصنّف"
+          }
+              </div>
             </div>
 
-            <button 
+            <button
               data-id="${p.id}"
               class="deleteBtn px-3 py-1 rounded-lg bg-rose-500 hover:bg-rose-600 text-xs"
             >
@@ -171,25 +174,34 @@
         document.querySelectorAll(".deleteBtn").forEach((btn) => {
           btn.onclick = async () => {
             const id = btn.dataset.id;
+            if (!confirm("هل تريد حذف هذا المنتج؟")) return;
 
-            await fetch(`/api/admin/products/${id}`, { method: "DELETE" });
+            await fetch(`/api/admin/products/${id}`, {
+              method: "DELETE",
+            });
             loadProducts();
           };
         });
       }
 
-      /** ===================== LOAD USERS ===================== */
+      // ===== تحميل المستخدمين =====
       async function loadUsers() {
         const container = document.getElementById("usersList");
+        if (!container) return;
 
         const res = await fetch("/api/users");
         const users = await res.json();
 
         container.innerHTML = "";
 
+        if (!users.length) {
+          container.innerHTML =
+            '<p class="text-slate-400 text-sm">لا يوجد مستخدمون بعد.</p>';
+          return;
+        }
+
         users.forEach((u) => {
           const row = document.createElement("div");
-
           row.className =
             "flex items-center justify-between bg-slate-700 rounded-xl px-4 py-2";
 
@@ -198,29 +210,31 @@
               <div class="font-semibold">${u.name}</div>
               <div class="text-slate-300">${u.email}</div>
             </div>
-
-            <span class="text-xs text-slate-400">ID: ${u.id} | ${u.role}</span>
+            <span class="text-xs text-slate-400">
+              ID: ${u.id} | Role: ${u.role}
+            </span>
           `;
 
           container.appendChild(row);
         });
       }
 
-      /** ===================== ADD PRODUCT ===================== */
+      // ===== إضافة منتج جديد =====
       function setupAddProductForm() {
         const form = document.getElementById("addProductForm");
         const msg = document.getElementById("formMsg");
+        if (!form) return;
 
         form.onsubmit = async (e) => {
           e.preventDefault();
+          msg.textContent = "";
+          msg.className = "text-sm";
 
           const fd = new FormData(form);
-
           const body = {
             name: fd.get("name"),
-            price: Number(fd.get("price")),
+            price: fd.get("price"),
             category: fd.get("category"),
-            image: fd.get("image"),
             description: fd.get("description"),
           };
 
@@ -233,12 +247,12 @@
           const data = await res.json();
 
           if (!data.success) {
-            msg.textContent = "خطأ أثناء الإضافة";
+            msg.textContent = data.message || "خطأ أثناء الإضافة";
             msg.className = "text-sm text-rose-400";
             return;
           }
 
-          msg.textContent = "تمت الإضافة بنجاح";
+          msg.textContent = "تمت إضافة المنتج بنجاح ✅";
           msg.className = "text-sm text-emerald-400";
 
           form.reset();
@@ -246,11 +260,12 @@
         };
       }
 
-      /** ===================== MAIN ===================== */
+      // ===== MAIN =====
       document.addEventListener("DOMContentLoaded", () => {
         const user = requireAdmin();
-        setupHeader(user);
+        if (!user) return;
 
+        setupHeader(user);
         loadProducts();
         loadUsers();
         setupAddProductForm();
