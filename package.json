@@ -1,16 +1,14 @@
 {
-  "name": "simple-online-store",
+  "name": "online-store",
   "version": "1.0.0",
-  "description": "Simple full-stack online store (Node.js + Express + SQLite) ready for GitHub.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
-    "express": "^4.21.0",
-    "express-session": "^1.18.2",
-    "lowdb": "^7.0.1"
+    "express": "^4.19.2",
+    "express-session": "^1.17.3",
+    "lowdb": "^6.0.1"
   }
 }

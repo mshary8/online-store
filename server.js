@@ -1,186 +1,252 @@
-// server.js
-
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const session = require("express-session");
 
+// ============ LOWDB SETUP ============
 const { Low } = require("lowdb");
 const { JSONFile } = require("lowdb/node");
 
-// ===== إعداد lowdb =====
 const dbFile = path.join(__dirname, "db.json");
-const adapter = new JSONFile(dbFile);
 
-// هنا نمرر الـ default data عشان ما يطلع خطأ "missing default data"
-const defaultData = { products: [], users: [] };
+// لازم نعطي lowdb بيانات افتراضية عشان ما يطلع
+// الخطأ: lowdb: missing default data
+const defaultData = {
+  products: [],
+  users: []
+};
+
+const adapter = new JSONFile(dbFile);
 const db = new Low(adapter, defaultData);
 
-// ===== إنشاء تطبيق Express =====
-const app = express();
-const PORT = process.env.PORT || 10000;
-
-// Middleware
-app.use(
-  cors({
-    origin: true,
-    credentials: true,
-  })
-);
-
-app.use(express.json());
-
-app.use(
-  session({
-    secret: "meshari-tech-store-secret",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: false,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    },
-  })
-);
-
-app.use(express.static(path.join(__dirname, "public")));
-
-// ===== توليد منتجات تجريبية =====
-function generateSeedProducts() {
-  const categories = [
-    { key: "laptops", label: "إلكترونيات - لابتوبات", baseName: "Laptop Pro" },
-    { key: "phones", label: "إلكترونيات - جوالات", baseName: "Smart Phone" },
-    { key: "tablets", label: "إلكترونيات - تابلت", baseName: "Tab Plus" },
-    { key: "monitors", label: "إلكترونيات - شاشات", baseName: "Ultra Monitor" },
-    { key: "audio", label: "إلكترونيات - سماعات", baseName: "Sound Beats" },
-    { key: "consoles", label: "أجهزة الترفيه - كونسل", baseName: "Game Station" },
-    { key: "accessories", label: "إكسسوارات اللعب", baseName: "Gaming Accessory" },
-    { key: "subscriptions", label: "اشتراكات المشاهدة", baseName: "Streaming Plan" },
-    { key: "storage", label: "التخزين", baseName: "SSD Drive" },
-    { key: "network", label: "الشبكات", baseName: "WiFi Router" },
-  ];
-
-  const products = [];
-  let id = 1;
-
-  categories.forEach((cat) => {
-    for (let i = 1; i <= 10; i++) {
-      const basePrice = 1500 + Math.floor(Math.random() * 2500);
-      products.push({
-        id: id++,
-        name: `${cat.baseName} ${i}`,
-        price: basePrice + i * 10,
-        category: cat.key,
-        section: cat.label,
-        image: `${cat.key}${((i - 1) % 3) + 1}.jpg`,
-        description: `منتج ${cat.baseName} رقم ${i} من فئة ${cat.label}، مناسب للاستخدام اليومي.`,
-      });
-    }
-  });
-
-  return products;
-}
-
-// ===== تهيئة قاعدة البيانات =====
+// ============ تهيئة قاعدة البيانات ============
 async function initDB() {
   await db.read();
 
-  // lowdb v7 يضمن وجود db.data لكن نتأكد من نوع الحقول
-  if (!db.data) db.data = { ...defaultData };
+  // لو الملف كان فاضي {} أو undefined
+  if (!db.data) {
+    db.data = { products: [], users: [] };
+  }
 
   if (!Array.isArray(db.data.products)) db.data.products = [];
   if (!Array.isArray(db.data.users)) db.data.users = [];
 
-  // لو ما فيه منتجات → نولّد ١٠٠ منتج
-  if (db.data.products.length === 0) {
-    db.data.products = generateSeedProducts();
-    console.log("Seeded 100 products 🌟");
-  }
-
-  // تأكد فيه أدمن واحد على الأقل
-  const hasAdmin = db.data.users.some((u) => u.role === "admin");
-  if (!hasAdmin) {
+  // إنشاء أدمن افتراضي لو مو موجود
+  if (!db.data.users.some((u) => u.role === "admin")) {
     db.data.users.push({
-      id: 1,
+      id: Date.now(),
       name: "Admin",
       email: "admin@store.com",
-      password: "admin123", // للتجربة فقط
-      role: "admin",
+      password: "admin123", // للتجربة فقط (مو آمن للإنتاج)
+      role: "admin"
     });
-    console.log("Created default admin user (admin@store.com / admin123)");
+    console.log("Created default admin: admin@store.com / admin123");
+  }
+
+  // توليد 100 منتج تجريبي لو ما فيه منتجات
+  if (db.data.products.length === 0) {
+    db.data.products = generateSeedProducts();
+    console.log("Seeded 100 demo products");
   }
 
   await db.write();
   console.log("Database initialized ✅");
 }
 
-// شغّل التهيئة
-initDB().catch((err) => console.error("DB init error:", err));
-
-// ===== دوال المساعدة للمستخدم الحالي =====
-async function getCurrentUser(req) {
-  await db.read();
-  const userId = req.session.userId;
-  if (!userId) return null;
-  return db.data.users.find((u) => u.id === userId) || null;
+// ============ توليد منتجات تجريبية ============
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-async function requireAdmin(req, res, next) {
-  const user = await getCurrentUser(req);
-  if (!user) {
-    return res.status(401).json({ message: "يجب تسجيل الدخول أولا" });
+function generateSeedProducts() {
+  const products = [];
+  let id = 1;
+
+  const categories = [
+    {
+      key: "laptops",
+      label: "لابتوبات 💻",
+      minPrice: 2500,
+      maxPrice: 7000,
+      image: "laptop.jpg"
+    },
+    {
+      key: "phones",
+      label: "جوالات 📱",
+      minPrice: 1500,
+      maxPrice: 5000,
+      image: "phone.jpg"
+    },
+    {
+      key: "headphones",
+      label: "سماعات 🎧",
+      minPrice: 150,
+      maxPrice: 1200,
+      image: "headphones.jpg"
+    },
+    {
+      key: "consoles",
+      label: "أجهزة ترفيه (Sony / Xbox) 🎮",
+      minPrice: 1500,
+      maxPrice: 4000,
+      image: "console.jpg"
+    },
+    {
+      key: "monitors",
+      label: "شاشات كمبيوتر 🖥️",
+      minPrice: 700,
+      maxPrice: 2500,
+      image: "monitor.jpg"
+    },
+    {
+      key: "storage",
+      label: "وحدات تخزين (SSD / HDD) 💾",
+      minPrice: 150,
+      maxPrice: 900,
+      image: "storage.jpg"
+    },
+    {
+      key: "accessories",
+      label: "إكسسوارات (كيبورد / ماوس) ⌨️",
+      minPrice: 50,
+      maxPrice: 500,
+      image: "accessories.jpg"
+    },
+    {
+      key: "smart-home",
+      label: "أجهزة منزل ذكي 🏠",
+      minPrice: 200,
+      maxPrice: 1500,
+      image: "smarthome.jpg"
+    },
+    {
+      key: "streaming",
+      label: "اشتراكات منصات مشاهدة 📺",
+      minPrice: 20,
+      maxPrice: 100,
+      image: "streaming.jpg"
+    },
+    {
+      key: "gaming-sub",
+      label: "اشتراكات ألعاب 🎮☁️",
+      minPrice: 30,
+      maxPrice: 150,
+      image: "gaming-sub.jpg"
+    }
+  ];
+
+  categories.forEach((cat) => {
+    for (let i = 1; i <= 10; i++) {
+      const price = randomInt(cat.minPrice, cat.maxPrice);
+      const product = {
+        id: id++,
+        name: `${cat.label} - منتج رقم ${i}`,
+        category: cat.key, // نستخدمه في الفلتر في الواجهة الأمامية
+        categoryLabel: cat.label,
+        price,
+        description: `منتج من فئة ${cat.label} مناسب للاستخدام اليومي.`,
+        image: `/images/${cat.image}`
+      };
+      products.push(product);
+    }
+  });
+
+  return products;
+}
+
+// ============ إعداد السيرفر ============
+const app = express();
+const PORT = process.env.PORT || 10000;
+
+app.use(cors());
+app.use(express.json());
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "dev-secret",
+    resave: false,
+    saveUninitialized: false
+  })
+);
+
+// ملفات الواجهة الأمامية
+app.use(express.static(path.join(__dirname, "public")));
+
+// ميدل وير لتحميل المستخدم من الـ session
+app.use(async (req, res, next) => {
+  await db.read();
+  const userId = req.session.userId;
+  if (userId) {
+    const user = db.data.users.find((u) => u.id === userId);
+    req.user = user || null;
+  } else {
+    req.user = null;
   }
-  if (user.role !== "admin") {
-    return res.status(403).json({ message: "مسموح للمشرف فقط" });
+  next();
+});
+
+// ميدل وير للتحقق من تسجيل الدخول
+function requireAuth(req, res, next) {
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      message: "يجب تسجيل الدخول أولاً"
+    });
   }
-  req.user = user;
   next();
 }
 
-// ===== Routes =====
+// ميدل وير للأدمن فقط
+function requireAdmin(req, res, next) {
+  if (!req.user || req.user.role !== "admin") {
+    return res.status(403).json({
+      success: false,
+      message: "صلاحية الأدمن فقط"
+    });
+  }
+  next();
+}
 
-// المنتجات (للمتجر)
-app.get("/api/products", async (req, res) => {
-  await db.read();
-  res.json(db.data.products || []);
+// ============ مسارات الأوث ============
+app.get("/api/auth/me", (req, res) => {
+  if (!req.user) return res.json({ user: null });
+  const { id, name, email, role } = req.user;
+  res.json({ user: { id, name, email, role } });
 });
 
-// تسجيل مستخدم جديد
 app.post("/api/register", async (req, res) => {
-  const { name, email, password } = req.body || {};
+  const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
-    return res.json({ success: false, message: "البيانات غير مكتملة" });
+    return res
+      .status(400)
+      .json({ success: false, message: "البيانات غير مكتملة" });
   }
 
   await db.read();
+
   const exists = db.data.users.find((u) => u.email === email);
   if (exists) {
-    return res.json({ success: false, message: "هذا البريد مستخدم مسبقًا" });
+    return res
+      .status(400)
+      .json({ success: false, message: "البريد الإلكتروني مستخدم من قبل" });
   }
 
-  const nextId =
-    db.data.users.reduce((max, u) => Math.max(max, u.id || 0), 0) + 1;
-
-  db.data.users.push({
-    id: nextId,
+  const user = {
+    id: Date.now(),
     name,
     email,
-    password, // بدون تشفير (تجربة)
-    role: "user",
-  });
+    password, // للتجربة فقط
+    role: "user"
+  };
 
+  db.data.users.push(user);
   await db.write();
 
-  res.json({
-    success: true,
-    message: "تم إنشاء الحساب بنجاح",
-  });
+  res.json({ success: true, message: "تم إنشاء الحساب بنجاح" });
 });
 
-// تسجيل الدخول
 app.post("/api/login", async (req, res) => {
-  const { email, password } = req.body || {};
+  const { email, password } = req.body;
 
   await db.read();
   const user = db.data.users.find(
@@ -188,99 +254,104 @@ app.post("/api/login", async (req, res) => {
   );
 
   if (!user) {
-    return res.json({
-      success: false,
-      message: "البريد الإلكتروني أو كلمة المرور غير صحيحة",
-    });
+    return res
+      .status(401)
+      .json({ success: false, message: "بيانات الدخول غير صحيحة" });
   }
 
   req.session.userId = user.id;
 
   res.json({
     success: true,
+    message: "تم تسجيل الدخول بنجاح",
     name: user.name,
-    isAdmin: user.role === "admin",
-    token: "session",
+    isAdmin: user.role === "admin"
   });
 });
 
-// معلومات المستخدم الحالي
-app.get("/api/auth/me", async (req, res) => {
-  const user = await getCurrentUser(req);
-  if (!user) return res.json({ user: null });
-
-  res.json({
-    user: {
-      id: user.id,
-      username: user.name,
-      email: user.email,
-      role: user.role,
-    },
-  });
-});
-
-// تسجيل الخروج
 app.post("/api/auth/logout", (req, res) => {
   req.session.destroy(() => {
     res.json({ success: true });
   });
 });
 
-// ===== API الأدمن =====
+// ============ مسارات المنتجات (الواجهة الأمامية) ============
+app.get("/api/products", async (req, res) => {
+  await db.read();
+  const products = db.data.products || [];
+  res.json(products);
+});
 
-// قراءة المنتجات
+// ============ مسارات الأدمن للمنتجات ============
 app.get("/api/admin/products", requireAdmin, async (req, res) => {
   await db.read();
   res.json(db.data.products || []);
 });
 
-// إضافة منتج
 app.post("/api/admin/products", requireAdmin, async (req, res) => {
-  const { name, price, category, image, description } = req.body || {};
+  const { name, price, category, image, description } = req.body;
 
   if (!name || !price) {
     return res
       .status(400)
-      .json({ message: "الاسم والسعر حقول مطلوبة", success: false });
+      .json({ success: false, message: "الاسم والسعر مطلوبان" });
   }
 
   await db.read();
 
-  const nextId =
-    db.data.products.reduce((max, p) => Math.max(max, p.id || 0), 0) + 1;
-
-  const product = {
-    id: nextId,
+  const newProduct = {
+    id: Date.now(),
     name,
     price: Number(price),
     category: category || "other",
+    categoryLabel: "",
     image: image || "",
-    description: description || "",
+    description: description || ""
   };
 
-  db.data.products.push(product);
+  db.data.products.push(newProduct);
   await db.write();
 
-  res.status(201).json(product);
+  res.json({ success: true, product: newProduct });
 });
 
-// حذف منتج
 app.delete("/api/admin/products/:id", requireAdmin, async (req, res) => {
   const id = Number(req.params.id);
   await db.read();
 
-  const index = db.data.products.findIndex((p) => p.id === id);
-  if (index === -1) {
-    return res.status(404).json({ message: "المنتج غير موجود" });
+  const before = db.data.products.length;
+  db.data.products = db.data.products.filter((p) => p.id !== id);
+  const after = db.data.products.length;
+
+  if (before === after) {
+    return res.status(404).json({ success: false, message: "المنتج غير موجود" });
   }
 
-  db.data.products.splice(index, 1);
   await db.write();
-
   res.json({ success: true });
 });
 
-// ===== تشغيل السيرفر =====
-app.listen(PORT, () => {
-  console.log("Server running on port", PORT);
+// ============ مسارات الأدمن للمستخدمين ============
+app.get("/api/admin/users", requireAdmin, async (req, res) => {
+  await db.read();
+  const users = db.data.users.map((u) => ({
+    id: u.id,
+    name: u.name,
+    email: u.email,
+    role: u.role,
+    password: u.password // للتجربة فقط – لا تُستخدم في مشروع حقيقي
+  }));
+  res.json(users);
+});
+
+// أي مسار غير معروف → رجّع index.html (للواجهة الأمامية)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// ============ تشغيل السيرفر ============
+initDB().then(() => {
+  app.listen(PORT, () => {
+    console.log("Server running on port", PORT);
+  });
 });
