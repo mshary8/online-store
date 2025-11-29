@@ -1,154 +1,25 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Meshari Tech Store</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body class="store-body">
-    <!-- الهيدر -->
-    <header class="store-header">
-      <div class="store-logo">
-        Meshari <span>Tech Store</span>
-      </div>
+<head>
+  <meta charset="UTF-8">
+  <title>Meshari Tech Store</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html">الرئيسية</a>
+      <a href="login.html">تسجيل الدخول</a>
+      <a href="register.html">تسجيل جديد</a>
+      <a href="cart.html">السلة (<span id="cartCount">0</span>)</a>
+    </nav>
+  </header>
 
-      <nav class="store-nav">
-        <a href="index.html">الرئيسية</a>
-        <a href="login.html">تسجيل الدخول</a>
-        <a href="register.html">تسجيل جديد</a>
-        <a href="cart.html" class="cart-link">
-          السلة
-          <span id="cartCount">0</span>
-        </a>
-      </nav>
-    </header>
+  <main>
+    <h1>جميع المنتجات</h1>
+    <div id="productsContainer" class="grid"></div>
+  </main>
 
-    <!-- المحتوى الرئيسي -->
-    <main class="store-main">
-      <!-- العنوان وعدد المنتجات -->
-      <div class="store-header-row">
-        <div>
-          <h1 class="store-title">جميع المنتجات</h1>
-          <p class="store-subtitle">
-            اختر من بين أحدث الأجهزة والمنتجات التقنية.
-          </p>
-        </div>
-
-        <div class="products-count">
-          <span id="productsCount">0</span> منتج
-        </div>
-      </div>
-
-      <!-- التخطيط: منتجات + سايدبار -->
-      <div class="store-layout">
-        <!-- قسم المنتجات -->
-        <section class="products-section">
-          <!-- فلاتر -->
-          <div class="filters-row">
-            <input
-              id="searchInput"
-              class="search-input"
-              type="text"
-              placeholder="ابحث باسم المنتج أو الوصف..."
-            />
-
-            <input
-              id="priceFrom"
-              class="price-input"
-              type="number"
-              min="0"
-              placeholder="من السعر"
-            />
-
-            <input
-              id="priceTo"
-              class="price-input"
-              type="number"
-              min="0"
-              placeholder="إلى السعر"
-              value="5000"
-            />
-
-            <button id="applyFilterBtn" class="btn btn-primary">
-              تطبيق الفلتر
-            </button>
-            <button id="resetFilterBtn" class="btn btn-outline">
-              إعادة تعيين
-            </button>
-          </div>
-
-          <!-- شبكة المنتجات -->
-          <div id="productsContainer" class="products-grid"></div>
-        </section>
-
-        <!-- سايدبار الأصناف -->
-        <aside class="sidebar">
-          <button id="showAllBtn" class="btn btn-primary btn-show-all">
-            عرض جميع المنتجات
-          </button>
-
-          <h2>الأصناف</h2>
-
-          <p class="category-group-title">الإلكترونيات ⚡</p>
-          <ul class="category-list">
-            <li>
-              <button class="category-pill" data-category="laptops">
-                💻 اللابتوبات
-              </button>
-            </li>
-            <li>
-              <button class="category-pill" data-category="phones">
-                📱 الجوالات
-              </button>
-            </li>
-            <li>
-              <button class="category-pill" data-category="tablets">
-                📲 التابلت
-              </button>
-            </li>
-            <li>
-              <button class="category-pill" data-category="monitors">
-                🖥️ الشاشات
-              </button>
-            </li>
-            <li>
-              <button class="category-pill" data-category="audio">
-                🎧 السماعات
-              </button>
-            </li>
-          </ul>
-
-          <p class="category-group-title">أجهزة الترفيه 🎮</p>
-          <ul class="category-list">
-            <li>
-              <button class="category-pill" data-category="consoles">
-                أجهزة اللعب (Sony / Xbox)
-              </button>
-            </li>
-            <li>
-              <button class="category-pill" data-category="accessories">
-                🎮 إكسسوارات اللعب
-              </button>
-            </li>
-          </ul>
-
-          <p class="category-group-title">الاشتراكات 📺</p>
-          <ul class="category-list">
-            <li>
-              <button class="category-pill" data-category="subscriptions">
-                اشتراكات تطبيقات المشاهدة
-              </button>
-            </li>
-          </ul>
-        </aside>
-      </div>
-    </main>
-
-    <!-- فوتر -->
-    <footer class="store-footer">
-      &copy; 2025 Meshari Tech Store – متجر تجريبي للتعلم
-    </footer>
-
-    <script src="main.js"></script>
-  </body>
+  <script src="main.js"></script>
+</body>
 </html>

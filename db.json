@@ -2,14 +2,11 @@
   "users": [
     {
       "id": 1,
-      "name": "Admin Meshari",
+      "name": "Meshari",
       "email": "meshari@gmail.com",
-      "passwordHash": "24ab417505c3a3fa6cc67ca53afc640cec2c0fbb3a8a53a2f59c8798a2f3d74a",
-      "role": "admin",
-      "createdAt": "2025-01-01T00:00:00.000Z"
+      "password": "1234561",
+      "role": "admin"
     }
   ],
-  "products": [],
-  "cart": [],
-  "orders": []
+  "products": []
 }
