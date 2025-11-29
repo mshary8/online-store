@@ -17,5 +17,13 @@
       "category": "Electronics"
     }
   ],
-  "users": []
+  "users": [
+    {
+      "id": 1,
+      "name": "Admin",
+      "email": "admin@example.com",
+      "password": "admin123",
+      "role": "admin"
+    }
+  ]
 }

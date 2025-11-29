@@ -1,65 +1,82 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <title>تسجيل الدخول - المتجر</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="min-h-screen bg-slate-900 flex items-center justify-center">
-  <div class="bg-slate-800 text-white rounded-2xl shadow-lg p-8 w-full max-w-md">
-    <h1 class="text-2xl font-bold mb-6 text-center">تسجيل الدخول</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <title>تسجيل الدخول - المتجر</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="auth-body">
+    <div class="auth-card">
+      <h1>تسجيل الدخول</h1>
 
-    <form id="loginForm" class="space-y-4">
-      <div>
-        <label class="block mb-1 text-sm">الإيميل</label>
-        <input type="email" id="email" class="w-full rounded-lg px-3 py-2 bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
-      </div>
-      <div>
-        <label class="block mb-1 text-sm">كلمة المرور</label>
-        <input type="password" id="password" class="w-full rounded-lg px-3 py-2 bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
-      </div>
-      <p id="msg" class="text-sm text-red-400"></p>
-      <button class="w-full bg-indigo-500 hover:bg-indigo-600 rounded-lg py-2 font-semibold transition">
-        دخول
-      </button>
-    </form>
+      <form id="loginForm" class="auth-form">
+        <label>
+          البريد الإلكتروني
+          <input type="email" id="loginEmail" required />
+        </label>
 
-    <p class="mt-4 text-center text-sm">
-      ما عندك حساب؟
-      <a href="/register.html" class="text-indigo-400 hover:underline">تسجيل جديد</a>
-    </p>
-  </div>
+        <label>
+          كلمة المرور
+          <input type="password" id="loginPassword" required />
+        </label>
 
-  <script>
-    const form = document.getElementById("loginForm");
-    const msg = document.getElementById("msg");
+        <button type="submit" class="btn-primary">دخول</button>
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      msg.textContent = "";
+        <p class="auth-switch">
+          ليس لديك حساب؟ <a href="register.html">إنشاء حساب جديد</a>
+        </p>
 
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+        <p id="loginMessage" class="auth-message"></p>
+      </form>
+    </div>
 
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+    <script>
+      const form = document.getElementById("loginForm");
+      const msg = document.getElementById("loginMessage");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        msg.textContent = "";
+
+        const email = document.getElementById("loginEmail").value.trim();
+        const password = document
+          .getElementById("loginPassword")
+          .value.trim();
+
+        try {
+          const res = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+
+          const data = await res.json();
+
+          if (!data.success) {
+            msg.textContent = data.message || "خطأ في تسجيل الدخول";
+            msg.classList.add("error");
+            return;
+          }
+
+          // حفظ معلومات بسيطة في localStorage
+          localStorage.setItem("userName", data.name);
+          localStorage.setItem("isAdmin", data.isAdmin ? "true" : "false");
+          localStorage.setItem("authToken", data.token);
+
+          msg.textContent = "تم تسجيل الدخول بنجاح ✅";
+
+          // توجيه حسب نوع المستخدم
+          if (data.isAdmin) {
+            window.location.href = "admin.html";
+          } else {
+            window.location.href = "index.html";
+          }
+        } catch (err) {
+          console.error(err);
+          msg.textContent = "حدث خطأ في الاتصال بالسيرفر";
+          msg.classList.add("error");
+        }
       });
-
-      const data = await res.json();
-      if (!res.ok) {
-        msg.textContent = data.message || "خطأ في تسجيل الدخول";
-        return;
-      }
-
-      // لو أدمن نوديه لوحة الإدارة، غير كذا نوديه الرئيسية
-      if (data.user.role === "admin") {
-        window.location.href = "/admin.html";
-      } else {
-        window.location.href = "/";
-      }
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>

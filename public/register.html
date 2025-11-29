@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>إنشاء حساب جديد - المتجر</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="auth-body">
+    <div class="auth-card">
+      <h1>إنشاء حساب جديد</h1>
+
+      <form id="registerForm" class="auth-form">
+        <label>
+          الاسم الكامل
+          <input type="text" id="regName" required />
+        </label>
+
+        <label>
+          البريد الإلكتروني
+          <input type="email" id="regEmail" required />
+        </label>
+
+        <label>
+          كلمة المرور
+          <input type="password" id="regPassword" required />
+        </label>
+
+        <button type="submit" class="btn-primary">تسجيل</button>
+
+        <p class="auth-switch">
+          لديك حساب بالفعل؟ <a href="login.html">تسجيل الدخول</a>
+        </p>
+
+        <p id="regMessage" class="auth-message"></p>
+      </form>
+    </div>
+
+    <script>
+      const regForm = document.getElementById("registerForm");
+      const regMsg = document.getElementById("regMessage");
+
+      regForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        regMsg.textContent = "";
+
+        const name = document.getElementById("regName").value.trim();
+        const email = document.getElementById("regEmail").value.trim();
+        const password = document.getElementById("regPassword").value.trim();
+
+        try {
+          const res = await fetch("/api/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, password }),
+          });
+
+          const data = await res.json();
+
+          if (!data.success) {
+            regMsg.textContent = data.message || "لم يتم إنشاء الحساب";
+            regMsg.classList.add("error");
+            return;
+          }
+
+          regMsg.textContent = data.message || "تم إنشاء الحساب بنجاح";
+          regMsg.classList.remove("error");
+
+          // بعد ثانيتين روح لصفحة تسجيل الدخول
+          setTimeout(() => {
+            window.location.href = "login.html";
+          }, 2000);
+        } catch (err) {
+          console.error(err);
+          regMsg.textContent = "حدث خطأ في الاتصال بالسيرفر";
+          regMsg.classList.add("error");
+        }
+      });
+    </script>
+  </body>
+</html>
