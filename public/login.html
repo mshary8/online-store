@@ -1,78 +1,102 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <title>تسجيل الدخول - Al-Mashari Electronics</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body class="auth-body">
-  <div class="auth-card">
-    <h1>تسجيل الدخول</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <title>تسجيل الدخول - Al-Mashari Electronics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center px-4"
+  >
+    <div
+      class="w-full max-w-sm bg-slate-900/95 border border-slate-800 rounded-2xl p-6 shadow-xl shadow-slate-950/40"
+    >
+      <h1 class="text-lg font-bold mb-4 text-center">
+        تسجيل الدخول إلى المتجر
+      </h1>
 
-    <form id="loginForm" class="auth-form">
-      <label>
-        البريد الإلكتروني
-        <input type="email" id="loginEmail" required />
-      </label>
+      <form id="loginForm" class="space-y-3 text-sm">
+        <div>
+          <label class="block mb-1 text-xs text-slate-300">البريد الإلكتروني</label>
+          <input
+            type="email"
+            id="loginEmail"
+            required
+            class="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-sky-500"
+          />
+        </div>
 
-      <label>
-        كلمة المرور
-        <input type="password" id="loginPassword" required />
-      </label>
+        <div>
+          <label class="block mb-1 text-xs text-slate-300">كلمة المرور</label>
+          <input
+            type="password"
+            id="loginPassword"
+            required
+            class="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-sky-500"
+          />
+        </div>
 
-      <button type="submit" class="btn-primary full">دخول</button>
+        <p id="loginMsg" class="text-xs text-rose-400 min-h-[16px]"></p>
 
-      <p class="auth-switch">
-        ليس لديك حساب؟ <a href="register.html">إنشاء حساب جديد</a>
-      </p>
+        <button
+          type="submit"
+          class="w-full mt-1 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold py-2 text-sm"
+        >
+          دخول
+        </button>
 
-      <p id="loginMessage" class="auth-message"></p>
-    </form>
-  </div>
+        <p class="text-[11px] text-slate-400 text-center mt-3">
+          لا تملك حسابًا؟
+          <a href="register.html" class="text-sky-400 hover:text-sky-300"
+            >إنشاء حساب جديد</a
+          >
+        </p>
+      </form>
+    </div>
 
-  <script>
-    const loginForm = document.getElementById("loginForm");
-    const loginMsg = document.getElementById("loginMessage");
-
-    function saveCurrentUser(user) {
-      localStorage.setItem("currentUser", JSON.stringify(user));
-    }
-
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      loginMsg.textContent = "";
-
-      const email = document.getElementById("loginEmail").value.trim();
-      const password = document.getElementById("loginPassword").value.trim();
-
-      try {
-        const res = await fetch("/api/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password })
-        });
-
-        const data = await res.json();
-
-        if (!res.ok || !data.success) {
-          loginMsg.textContent = data.message || "خطأ في تسجيل الدخول";
-          loginMsg.classList.add("error");
-          return;
-        }
-
-        saveCurrentUser(data.user);
-
-        if (data.user.role === "admin") {
-          window.location.href = "admin.html";
-        } else {
-          window.location.href = "index.html";
-        }
-      } catch (err) {
-        console.error(err);
-        loginMsg.textContent = "خطأ في الاتصال بالسيرفر";
-        loginMsg.classList.add("error");
+    <script>
+      function saveCurrentUser(user) {
+        localStorage.setItem("currentUser", JSON.stringify(user));
       }
-    });
-  </script>
-</body>
+
+      const form = document.getElementById("loginForm");
+      const msg = document.getElementById("loginMsg");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        msg.textContent = "";
+
+        const email = document.getElementById("loginEmail").value.trim();
+        const password = document
+          .getElementById("loginPassword")
+          .value.trim();
+
+        try {
+          const res = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+          });
+
+          const data = await res.json();
+
+          if (!res.ok || !data.success) {
+            msg.textContent = data.message || "خطأ في تسجيل الدخول";
+            return;
+          }
+
+          saveCurrentUser(data.user);
+
+          if (data.user.role === "admin") {
+            window.location.href = "admin.html";
+          } else {
+            window.location.href = "index.html";
+          }
+        } catch (err) {
+          console.error(err);
+          msg.textContent = "خطأ في الاتصال بالسيرفر";
+        }
+      });
+    </script>
+  </body>
 </html>

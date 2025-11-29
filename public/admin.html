@@ -1,87 +1,126 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <title>لوحة الإدارة - Al-Mashari Electronics</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="min-h-screen bg-slate-900 text-slate-100">
-
-  <header class="bg-slate-800 px-6 py-4 flex items-center justify-between">
-    <div>
-      <h1 class="text-xl font-bold">لوحة إدارة المتجر</h1>
-      <p class="text-xs text-slate-400">Al-Mashari Electronics</p>
-    </div>
-
-    <div class="flex items-center gap-4 text-sm">
-      <span id="adminName" class="text-slate-300"></span>
-      <button
-        id="logoutBtn"
-        class="px-3 py-1 rounded-lg bg-rose-500 hover:bg-rose-600 text-xs">
-        تسجيل الخروج
-      </button>
-      <a
-        href="index.html"
-        class="px-3 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-xs">
-        العودة للمتجر
-      </a>
-    </div>
-  </header>
-
-  <main class="max-w-6xl mx-auto py-8 px-4 space-y-8">
-
-    <section class="bg-slate-800 rounded-2xl p-6 shadow-lg shadow-slate-900/50">
-      <h2 class="text-lg font-semibold mb-4">إضافة منتج جديد</h2>
-
-      <form id="addProductForm" class="grid md:grid-cols-2 gap-4" enctype="multipart/form-data">
+  <head>
+    <meta charset="UTF-8" />
+    <title>لوحة الإدارة - Al-Mashari Electronics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="min-h-screen bg-slate-950 text-slate-100">
+    <header class="bg-slate-900 border-b border-slate-800 px-6 py-4">
+      <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
         <div>
-          <label class="block mb-1 text-xs text-slate-300">اسم المنتج</label>
-          <input name="name" class="w-full rounded-lg px-3 py-2 bg-slate-900 border border-slate-700 text-sm" required />
+          <h1 class="text-xl font-bold">لوحة إدارة المتجر</h1>
+          <p class="text-[11px] text-slate-400">Al-Mashari Electronics</p>
         </div>
 
-        <div>
-          <label class="block mb-1 text-xs text-slate-300">السعر (ر.س)</label>
-          <input name="price" type="number" class="w-full rounded-lg px-3 py-2 bg-slate-900 border border-slate-700 text-sm" required />
-        </div>
-
-        <div>
-          <label class="block mb-1 text-xs text-slate-300">الفئة</label>
-          <select name="category" class="w-full rounded-lg px-3 py-2 bg-slate-900 border border-slate-700 text-sm">
-            <option value="">بدون</option>
-            <option value="laptops">لابتوبات</option>
-            <option value="phones">جوالات</option>
-            <option value="audio">سماعات</option>
-            <option value="watches">ساعات</option>
-            <option value="printers">طابعات</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block mb-1 text-xs text-slate-300">صورة المنتج</label>
-          <input name="image" type="file" accept="image/*" class="w-full text-xs text-slate-300" />
-        </div>
-
-        <div class="md:col-span-2">
-          <label class="block mb-1 text-xs text-slate-300">الوصف</label>
-          <textarea name="description" rows="3" class="w-full rounded-lg px-3 py-2 bg-slate-900 border border-slate-700 text-sm"></textarea>
-        </div>
-
-        <p id="formMsg" class="text-xs md:col-span-2"></p>
-
-        <div class="md:col-span-2 flex justify-end">
-          <button class="px-5 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-sm font-semibold">
-            إضافة المنتج
+        <div class="flex items-center gap-3 text-xs">
+          <span id="adminName" class="text-slate-300"></span>
+          <button
+            id="logoutBtn"
+            class="px-3 py-1 rounded-full bg-rose-500 hover:bg-rose-600"
+          >
+            تسجيل الخروج
           </button>
+          <a
+            href="index.html"
+            class="px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700"
+          >
+            العودة للمتجر
+          </a>
         </div>
-      </form>
-    </section>
+      </div>
+    </header>
 
-    <section class="bg-slate-800 rounded-2xl p-6 shadow-lg shadow-slate-900/50">
-      <h2 class="text-lg font-semibold mb-4">المنتجات الحالية</h2>
-      <div id="adminProductsList" class="space-y-3 text-sm"></div>
-    </section>
-  </main>
+    <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+      <!-- Add Product -->
+      <section
+        class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl shadow-slate-950/40"
+      >
+        <h2 class="text-lg font-semibold mb-3">إضافة منتج جديد</h2>
 
-  <script src="admin.js"></script>
-</body>
+        <form
+          id="addProductForm"
+          class="grid md:grid-cols-2 gap-4 text-sm"
+          enctype="multipart/form-data"
+        >
+          <div>
+            <label class="block mb-1 text-xs text-slate-300">اسم المنتج</label>
+            <input
+              name="name"
+              required
+              class="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-sky-500"
+            />
+          </div>
+
+          <div>
+            <label class="block mb-1 text-xs text-slate-300">السعر (ر.س)</label>
+            <input
+              name="price"
+              type="number"
+              min="0"
+              step="0.01"
+              required
+              class="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-sky-500"
+            />
+          </div>
+
+          <div>
+            <label class="block mb-1 text-xs text-slate-300">الفئة</label>
+            <select
+              name="category"
+              class="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-sm"
+            >
+              <option value="">بدون</option>
+              <option value="laptops">لابتوبات</option>
+              <option value="phones">جوالات</option>
+              <option value="audio">سماعات</option>
+              <option value="watches">ساعات</option>
+              <option value="printers">طابعات</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block mb-1 text-xs text-slate-300"
+              >صورة المنتج (اختياري)</label
+            >
+            <input
+              type="file"
+              name="image"
+              accept="image/*"
+              class="w-full text-xs text-slate-300"
+            />
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block mb-1 text-xs text-slate-300">الوصف</label>
+            <textarea
+              name="description"
+              rows="3"
+              class="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-sm"
+            ></textarea>
+          </div>
+
+          <p id="formMsg" class="text-xs md:col-span-2 min-h-[16px]"></p>
+
+          <div class="md:col-span-2 flex justify-end">
+            <button
+              class="px-5 py-2 rounded-full bg-sky-500 hover:bg-sky-400 text-sm font-semibold text-slate-900"
+            >
+              إضافة المنتج
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Products List -->
+      <section
+        class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl shadow-slate-950/40"
+      >
+        <h2 class="text-lg font-semibold mb-3">المنتجات الحالية</h2>
+        <div id="adminProductsList" class="space-y-3 text-sm"></div>
+      </section>
+    </main>
+
+    <script src="admin.js" defer></script>
+  </body>
 </html>

@@ -1,79 +1,107 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <title>إنشاء حساب - Al-Mashari Electronics</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body class="auth-body">
-  <div class="auth-card">
-    <h1>إنشاء حساب جديد</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <title>إنشاء حساب - Al-Mashari Electronics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center px-4"
+  >
+    <div
+      class="w-full max-w-sm bg-slate-900/95 border border-slate-800 rounded-2xl p-6 shadow-xl shadow-slate-950/40"
+    >
+      <h1 class="text-lg font-bold mb-4 text-center">
+        إنشاء حساب جديد في المتجر
+      </h1>
 
-    <form id="registerForm" class="auth-form">
-      <label>
-        الاسم الكامل
-        <input type="text" id="regName" required />
-      </label>
+      <form id="registerForm" class="space-y-3 text-sm">
+        <div>
+          <label class="block mb-1 text-xs text-slate-300">الاسم الكامل</label>
+          <input
+            type="text"
+            id="regName"
+            required
+            class="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-sky-500"
+          />
+        </div>
 
-      <label>
-        البريد الإلكتروني
-        <input type="email" id="regEmail" required />
-      </label>
+        <div>
+          <label class="block mb-1 text-xs text-slate-300">البريد الإلكتروني</label>
+          <input
+            type="email"
+            id="regEmail"
+            required
+            class="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-sky-500"
+          />
+        </div>
 
-      <label>
-        كلمة المرور
-        <input type="password" id="regPassword" required />
-      </label>
+        <div>
+          <label class="block mb-1 text-xs text-slate-300">كلمة المرور</label>
+          <input
+            type="password"
+            id="regPassword"
+            required
+            class="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-sky-500"
+          />
+        </div>
 
-      <button type="submit" class="btn-primary full">تسجيل</button>
+        <p id="regMsg" class="text-xs text-rose-400 min-h-[16px]"></p>
 
-      <p class="auth-switch">
-        لديك حساب بالفعل؟ <a href="login.html">تسجيل الدخول</a>
-      </p>
+        <button
+          type="submit"
+          class="w-full mt-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-semibold py-2 text-sm"
+        >
+          تسجيل
+        </button>
 
-      <p id="regMessage" class="auth-message"></p>
-    </form>
-  </div>
+        <p class="text-[11px] text-slate-400 text-center mt-3">
+          لديك حساب بالفعل؟
+          <a href="login.html" class="text-sky-400 hover:text-sky-300"
+            >تسجيل الدخول</a
+          >
+        </p>
+      </form>
+    </div>
 
-  <script>
-    const regForm = document.getElementById("registerForm");
-    const regMsg = document.getElementById("regMessage");
+    <script>
+      const form = document.getElementById("registerForm");
+      const msg = document.getElementById("regMsg");
 
-    regForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      regMsg.textContent = "";
-      regMsg.classList.remove("error");
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        msg.textContent = "";
 
-      const name = document.getElementById("regName").value.trim();
-      const email = document.getElementById("regEmail").value.trim();
-      const password = document.getElementById("regPassword").value.trim();
+        const name = document.getElementById("regName").value.trim();
+        const email = document.getElementById("regEmail").value.trim();
+        const password = document.getElementById("regPassword").value.trim();
 
-      try {
-        const res = await fetch("/api/register", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, password })
-        });
+        try {
+          const res = await fetch("/api/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, password })
+          });
 
-        const data = await res.json();
+          const data = await res.json();
 
-        if (!res.ok || !data.success) {
-          regMsg.textContent = data.message || "لم يتم إنشاء الحساب";
-          regMsg.classList.add("error");
-          return;
+          if (!res.ok || !data.success) {
+            msg.textContent = data.message || "لم يتم إنشاء الحساب";
+            return;
+          }
+
+          msg.textContent = "تم إنشاء الحساب بنجاح ✅ سيتم تحويلك للدخول...";
+          msg.classList.remove("text-rose-400");
+          msg.classList.add("text-emerald-400");
+
+          setTimeout(() => {
+            window.location.href = "login.html";
+          }, 1500);
+        } catch (err) {
+          console.error(err);
+          msg.textContent = "خطأ في الاتصال بالسيرفر";
         }
-
-        regMsg.textContent = data.message || "تم إنشاء الحساب بنجاح ✅";
-
-        setTimeout(() => {
-          window.location.href = "login.html";
-        }, 1500);
-      } catch (err) {
-        console.error(err);
-        regMsg.textContent = "خطأ في الاتصال بالسيرفر";
-        regMsg.classList.add("error");
-      }
-    });
-  </script>
-</body>
+      });
+    </script>
+  </body>
 </html>

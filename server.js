@@ -1,98 +1,76 @@
-const express = require("express");
-const cors = require("cors");
-const path = require("path");
-const fs = require("fs").promises;
-const multer = require("multer");
+import express from "express";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+import fs from "fs";
+import multer from "multer";
+import { Low } from "lowdb";
+import { JSONFile } from "lowdb/node";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// ================== LowDB ==================
+const dbFile = path.join(__dirname, "db.json");
+const adapter = new JSONFile(dbFile);
+const defaultData = { users: [], products: [], orders: [] };
+const db = new Low(adapter, defaultData);
+
+await db.read();
+if (!db.data) db.data = { ...defaultData };
+
+db.data.users ||= [];
+db.data.products ||= [];
+db.data.orders ||= [];
+
+// تأكد من وجود الأدمن
+let admin = db.data.users.find((u) => u.email === "meshari@gmail.com");
+if (!admin) {
+  admin = {
+    id: 1,
+    name: "Meshari",
+    email: "meshari@gmail.com",
+    password: "1234561", // للتجربة فقط (بدون تشفير)
+    role: "admin"
+  };
+  db.data.users.push(admin);
+  await db.write();
+}
+
+console.log("DB initialized:", {
+  users: db.data.users.length,
+  products: db.data.products.length
+});
+
+// ================== Express ==================
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// ====== PATHS ======
-const __dirnameResolved = path.resolve();
-const DB_FILE = path.join(__dirnameResolved, "db.json");
-const UPLOADS_DIR = path.join(__dirnameResolved, "uploads");
-const PUBLIC_DIR = path.join(__dirnameResolved, "public");
-
-// ====== HELPERS: DB READ/WRITE ======
-async function readDB() {
-  try {
-    const raw = await fs.readFile(DB_FILE, "utf8");
-    const data = JSON.parse(raw);
-
-    return {
-      users: Array.isArray(data.users) ? data.users : [],
-      products: Array.isArray(data.products) ? data.products : []
-    };
-  } catch (err) {
-    if (err.code === "ENOENT") {
-      // file not found → empty db
-      return { users: [], products: [] };
-    }
-    throw err;
-  }
-}
-
-async function writeDB(data) {
-  const toWrite = {
-    users: Array.isArray(data.users) ? data.users : [],
-    products: Array.isArray(data.products) ? data.products : []
-  };
-  await fs.writeFile(DB_FILE, JSON.stringify(toWrite, null, 2), "utf8");
-}
-
-// ====== INIT: ensure uploads dir + admin user ======
-async function init() {
-  // ensure uploads folder exists
-  await fs.mkdir(UPLOADS_DIR, { recursive: true });
-
-  let db = await readDB();
-
-  // ensure admin user exists
-  const adminEmail = "meshari@gmail.com";
-  const adminPassword = "1234561";
-
-  let admin = db.users.find((u) => u.email === adminEmail);
-  if (!admin) {
-    const newAdmin = {
-      id: db.users.length ? Math.max(...db.users.map((u) => u.id)) + 1 : 1,
-      name: "Meshari Admin",
-      email: adminEmail,
-      password: adminPassword, // plain text for learning (NOT secure in real life)
-      role: "admin"
-    };
-    db.users.push(newAdmin);
-    console.log("✅ Admin created:", adminEmail, "/", adminPassword);
-  }
-
-  // no products seeded → you will add from admin panel
-  await writeDB(db);
-  console.log("✅ DB initialized");
-}
-
-// ====== MULTER (UPLOAD) CONFIG ======
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, UPLOADS_DIR);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname) || "";
-    const base = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, base + ext);
-  }
-});
-
-const upload = multer({ storage });
-
-// ====== MIDDLEWARE ======
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Static folders
-app.use("/uploads", express.static(UPLOADS_DIR));
-app.use(express.static(PUBLIC_DIR));
+// مجلد الملفات الثابتة
+const publicDir = path.join(__dirname, "public");
+const uploadsDir = path.join(publicDir, "uploads");
+fs.mkdirSync(uploadsDir, { recursive: true });
 
-// ====== AUTH API ======
+app.use(express.static(publicDir));
+app.use("/uploads", express.static(uploadsDir));
+
+// ================== Multer ==================
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadsDir),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const base = path.basename(file.originalname, ext);
+    const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, base + "-" + unique + ext);
+  }
+});
+const upload = multer({ storage });
+
+// ================== Auth APIs ==================
 
 // Register
 app.post("/api/register", async (req, res) => {
@@ -100,29 +78,36 @@ app.post("/api/register", async (req, res) => {
   if (!name || !email || !password) {
     return res
       .status(400)
-      .json({ success: false, message: "Name, email and password are required" });
+      .json({ success: false, message: "الاسم والإيميل وكلمة المرور مطلوبة" });
   }
 
-  const db = await readDB();
-  const exists = db.users.find((u) => u.email === email);
+  await db.read();
+  db.data.users ||= [];
+  const exists = db.data.users.find((u) => u.email === email);
   if (exists) {
     return res
       .status(400)
-      .json({ success: false, message: "Email already in use" });
+      .json({ success: false, message: "هذا البريد مستخدم من قبل" });
   }
 
   const newUser = {
-    id: db.users.length ? Math.max(...db.users.map((u) => u.id)) + 1 : 1,
+    id: db.data.users.length
+      ? Math.max(...db.data.users.map((u) => u.id)) + 1
+      : 1,
     name,
     email,
-    password,
+    password, // للتجربة فقط
     role: "user"
   };
 
-  db.users.push(newUser);
-  await writeDB(db);
+  db.data.users.push(newUser);
+  await db.write();
 
-  res.json({ success: true, message: "Account created successfully" });
+  res.json({
+    success: true,
+    message: "تم إنشاء الحساب بنجاح",
+    user: { id: newUser.id, name, email, role: newUser.role }
+  });
 });
 
 // Login
@@ -131,18 +116,19 @@ app.post("/api/login", async (req, res) => {
   if (!email || !password) {
     return res
       .status(400)
-      .json({ success: false, message: "Email and password are required" });
+      .json({ success: false, message: "الإيميل وكلمة المرور مطلوبة" });
   }
 
-  const db = await readDB();
-  const user = db.users.find(
+  await db.read();
+  const user = (db.data.users || []).find(
     (u) => u.email === email && u.password === password
   );
 
   if (!user) {
-    return res
-      .status(401)
-      .json({ success: false, message: "Invalid email or password" });
+    return res.status(401).json({
+      success: false,
+      message: "البريد الإلكتروني أو كلمة المرور غير صحيحة"
+    });
   }
 
   res.json({
@@ -156,77 +142,76 @@ app.post("/api/login", async (req, res) => {
   });
 });
 
-// ====== PRODUCTS API ======
+// ================== Products APIs ==================
 
-// Get all products
+// Get all products (store + admin)
 app.get("/api/products", async (req, res) => {
-  const db = await readDB();
-  res.json(db.products);
+  await db.read();
+  res.json(db.data.products || []);
 });
 
-// Add product (admin) with optional image
-app.post(
-  "/api/admin/products",
-  upload.single("image"),
-  async (req, res) => {
-    const { name, price, category, description } = req.body || {};
-    if (!name || !price) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Name and price are required" });
-    }
-
-    const db = await readDB();
-
-    const newProduct = {
-      id: db.products.length
-        ? Math.max(...db.products.map((p) => p.id)) + 1
-        : 1,
-      name,
-      price: Number(price),
-      category: category || "",
-      description: description || "",
-      image: req.file ? `/uploads/${req.file.filename}` : ""
-    };
-
-    db.products.push(newProduct);
-    await writeDB(db);
-
-    res.status(201).json({ success: true, product: newProduct });
+// Add product (admin panel) with optional image
+app.post("/api/admin/products", upload.single("image"), async (req, res) => {
+  const { name, price, category, description } = req.body || {};
+  if (!name || !price) {
+    return res
+      .status(400)
+      .json({ success: false, message: "اسم المنتج والسعر مطلوبان" });
   }
-);
 
-// Delete product (admin)
+  await db.read();
+  db.data.products ||= [];
+
+  const newId = db.data.products.length
+    ? Math.max(...db.data.products.map((p) => p.id)) + 1
+    : 1;
+
+  const imagePath = req.file ? `/uploads/${req.file.filename}` : "";
+
+  const newProduct = {
+    id: newId,
+    name,
+    price: Number(price),
+    category: category || "",
+    description: description || "",
+    image: imagePath
+  };
+
+  db.data.products.push(newProduct);
+  await db.write();
+
+  res.json({ success: true, product: newProduct });
+});
+
+// Delete product
 app.delete("/api/admin/products/:id", async (req, res) => {
   const id = Number(req.params.id);
-  const db = await readDB();
+  await db.read();
+  db.data.products ||= [];
 
-  const before = db.products.length;
-  db.products = db.products.filter((p) => p.id !== id);
-
-  if (db.products.length === before) {
+  const before = db.data.products.length;
+  db.data.products = db.data.products.filter((p) => p.id !== id);
+  if (db.data.products.length === before) {
     return res
       .status(404)
-      .json({ success: false, message: "Product not found" });
+      .json({ success: false, message: "المنتج غير موجود" });
   }
 
-  await writeDB(db);
+  await db.write();
   res.json({ success: true });
 });
 
-// ====== FALLBACK: serve index.html for unknown paths (SPA-ish) ======
-app.get("*", (req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, "index.html"));
+// List users (for admin panel if needed)
+app.get("/api/admin/users", async (req, res) => {
+  await db.read();
+  res.json(db.data.users || []);
 });
 
-// ====== START SERVER AFTER INIT ======
-init()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log("Server running on port", PORT);
-    });
-  })
-  .catch((err) => {
-    console.error("Error initializing DB", err);
-    process.exit(1);
-  });
+// Fallback to index.html
+app.get("*", (req, res) => {
+  res.sendFile(path.join(publicDir, "index.html"));
+});
+
+app.listen(PORT, () => {
+  console.log("Server running on port", PORT);
+});
