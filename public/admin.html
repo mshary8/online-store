@@ -2,79 +2,106 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <title>لوحة الإدارة - Meshari Tech Store</title>
+    <title>لوحة الإدارة - Meshari Store</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
 
-  <body class="min-h-screen bg-slate-900 text-white">
+  <body class="bg-slate-900 text-white min-h-screen">
     <!-- HEADER -->
-    <header class="bg-slate-800 px-6 py-4 flex items-center justify-between">
+    <header class="bg-slate-800 px-6 py-4 flex justify-between items-center shadow">
       <h1 class="text-xl font-bold">لوحة الإدارة</h1>
 
       <div class="flex items-center gap-4">
-        <span id="adminName" class="text-sm text-slate-300"></span>
+        <span id="adminName" class="text-slate-300"></span>
 
         <button
           id="logoutBtn"
-          class="px-3 py-1 rounded-lg bg-rose-500 hover:bg-rose-600 text-sm"
+          class="bg-rose-500 hover:bg-rose-600 px-3 py-1 rounded-lg text-sm"
         >
           تسجيل الخروج
         </button>
 
-        <a href="index.html" class="px-3 py-1 rounded-lg bg-slate-700 text-sm">
-          العودة للمتجر
+        <a
+          href="index.html"
+          class="px-3 py-1 rounded-lg bg-slate-700 text-sm hover:bg-slate-600"
+        >
+          المتجر
         </a>
       </div>
     </header>
 
-    <main class="max-w-6xl mx-auto py-8 px-4 space-y-8">
-      <!-- إضافة منتج جديد -->
-      <section class="bg-slate-800 rounded-2xl p-6 shadow">
+    <!-- MAIN -->
+    <main class="max-w-5xl mx-auto py-10 space-y-10 px-4">
+
+      <!-- إضافة منتج -->
+      <section class="bg-slate-800 rounded-2xl p-6 shadow-lg">
         <h2 class="text-lg font-semibold mb-4">إضافة منتج جديد</h2>
 
         <form id="addProductForm" class="grid md:grid-cols-2 gap-4">
+
+          <!-- اسم المنتج -->
           <div>
             <label class="block mb-1 text-sm">اسم المنتج</label>
             <input
               name="name"
-              class="w-full rounded-lg px-3 py-2 bg-slate-700 border border-slate-600"
               required
+              class="w-full bg-slate-700 rounded-lg p-2 border border-slate-600"
             />
           </div>
 
+          <!-- السعر -->
           <div>
             <label class="block mb-1 text-sm">السعر (ر.س)</label>
             <input
               name="price"
               type="number"
-              step="0.01"
-              class="w-full rounded-lg px-3 py-2 bg-slate-700 border border-slate-600"
               required
+              class="w-full bg-slate-700 rounded-lg p-2 border border-slate-600"
             />
           </div>
 
+          <!-- القسم -->
           <div>
-            <label class="block mb-1 text-sm">القسم (مثال: laptops)</label>
+            <label class="block mb-1 text-sm">القسم/الفئة</label>
             <input
               name="category"
-              class="w-full rounded-lg px-3 py-2 bg-slate-700 border border-slate-600"
+              required
+              class="w-full bg-slate-700 rounded-lg p-2 border border-slate-600"
             />
           </div>
 
+          <!-- رفع صورة -->
+          <div>
+            <label class="block mb-1 text-sm">صورة المنتج</label>
+
+            <input
+              id="productImage"
+              type="file"
+              accept="image/*"
+              class="w-full bg-slate-700 rounded-lg p-2 border border-slate-600"
+            />
+
+            <img
+              id="previewImg"
+              class="hidden mt-3 w-full h-40 rounded-lg object-cover border border-slate-600"
+            />
+          </div>
+
+          <!-- الوصف -->
           <div class="md:col-span-2">
             <label class="block mb-1 text-sm">الوصف</label>
             <textarea
               name="description"
               rows="3"
-              class="w-full rounded-lg px-3 py-2 bg-slate-700 border border-slate-600"
+              class="w-full bg-slate-700 rounded-lg p-2 border border-slate-600"
             ></textarea>
           </div>
 
-          <p id="formMsg" class="text-sm md:col-span-2"></p>
+          <p id="formMsg" class="md:col-span-2 text-sm"></p>
 
           <div class="md:col-span-2 flex justify-end">
             <button
-              class="px-5 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 font-semibold"
+              class="bg-indigo-500 hover:bg-indigo-600 px-6 py-2 rounded-lg font-semibold"
             >
               إضافة المنتج
             </button>
@@ -83,23 +110,27 @@
       </section>
 
       <!-- قائمة المنتجات -->
-      <section class="bg-slate-800 rounded-2xl p-6 shadow">
+      <section class="bg-slate-800 rounded-2xl p-6 shadow-lg">
         <h2 class="text-lg font-semibold mb-4">المنتجات الحالية</h2>
         <div id="adminProductsList" class="space-y-3"></div>
       </section>
 
-      <!-- المستخدمون -->
-      <section class="bg-slate-800 rounded-2xl p-6 shadow">
-        <h2 class="text-lg font-semibold mb-4">المستخدمون المسجّلون</h2>
-        <div id="usersList" class="space-y-2 text-sm"></div>
+      <!-- المستخدمين -->
+      <section class="bg-slate-800 rounded-2xl p-6 shadow-lg">
+        <h2 class="text-lg font-semibold mb-4">المستخدمون المسجلون</h2>
+        <div id="usersList" class="space-y-3"></div>
       </section>
+
     </main>
 
+    <!-- SCRIPTS -->
     <script>
-      // ===== أدوات المستخدم الحالي (من login.html) =====
+      const API_BASE = "";
+
+      /* -------- Current User -------- */
       function getCurrentUser() {
         try {
-          return JSON.parse(localStorage.getItem("currentUser"));
+          return JSON.parse(localStorage.getItem("currentUser")) || null;
         } catch {
           return null;
         }
@@ -114,161 +145,120 @@
       }
 
       function setupHeader(user) {
+        if (!user) return;
+
         const nameSpan = document.getElementById("adminName");
-        const logoutBtn = document.getElementById("logoutBtn");
+        nameSpan.textContent = "مرحباً، " + user.name + " (أدمن)";
 
-        if (nameSpan) {
-          nameSpan.textContent = "مرحباً، " + user.name + " (أدمن)";
-        }
-
-        if (logoutBtn) {
-          logoutBtn.onclick = () => {
-            localStorage.removeItem("currentUser");
-            window.location.href = "login.html";
-          };
-        }
-      }
-
-      // ===== تحميل المنتجات =====
-      async function loadProducts() {
-        const container = document.getElementById("adminProductsList");
-        if (!container) return;
-
-        const res = await fetch("/api/admin/products");
-        const products = await res.json();
-
-        container.innerHTML = "";
-
-        if (!products.length) {
-          container.innerHTML =
-            '<p class="text-slate-400 text-sm">لا يوجد منتجات بعد.</p>';
-          return;
-        }
-
-        products.forEach((p) => {
-          const div = document.createElement("div");
-          div.className =
-            "flex items-center justify-between bg-slate-700 rounded-xl px-4 py-3 text-sm";
-
-          div.innerHTML = `
-            <div>
-              <div class="font-semibold">${p.name}</div>
-              <div class="text-slate-300">
-                ${p.price} ر.س – ${
-            p.displayCategory || p.category || "غير مصنّف"
-          }
-              </div>
-            </div>
-
-            <button
-              data-id="${p.id}"
-              class="deleteBtn px-3 py-1 rounded-lg bg-rose-500 hover:bg-rose-600 text-xs"
-            >
-              حذف
-            </button>
-          `;
-
-          container.appendChild(div);
-        });
-
-        document.querySelectorAll(".deleteBtn").forEach((btn) => {
-          btn.onclick = async () => {
-            const id = btn.dataset.id;
-            if (!confirm("هل تريد حذف هذا المنتج؟")) return;
-
-            await fetch(`/api/admin/products/${id}`, {
-              method: "DELETE",
-            });
-            loadProducts();
-          };
-        });
-      }
-
-      // ===== تحميل المستخدمين =====
-      async function loadUsers() {
-        const container = document.getElementById("usersList");
-        if (!container) return;
-
-        const res = await fetch("/api/users");
-        const users = await res.json();
-
-        container.innerHTML = "";
-
-        if (!users.length) {
-          container.innerHTML =
-            '<p class="text-slate-400 text-sm">لا يوجد مستخدمون بعد.</p>';
-          return;
-        }
-
-        users.forEach((u) => {
-          const row = document.createElement("div");
-          row.className =
-            "flex items-center justify-between bg-slate-700 rounded-xl px-4 py-2";
-
-          row.innerHTML = `
-            <div>
-              <div class="font-semibold">${u.name}</div>
-              <div class="text-slate-300">${u.email}</div>
-            </div>
-            <span class="text-xs text-slate-400">
-              ID: ${u.id} | Role: ${u.role}
-            </span>
-          `;
-
-          container.appendChild(row);
-        });
-      }
-
-      // ===== إضافة منتج جديد =====
-      function setupAddProductForm() {
-        const form = document.getElementById("addProductForm");
-        const msg = document.getElementById("formMsg");
-        if (!form) return;
-
-        form.onsubmit = async (e) => {
-          e.preventDefault();
-          msg.textContent = "";
-          msg.className = "text-sm";
-
-          const fd = new FormData(form);
-          const body = {
-            name: fd.get("name"),
-            price: fd.get("price"),
-            category: fd.get("category"),
-            description: fd.get("description"),
-          };
-
-          const res = await fetch("/api/admin/products", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-          });
-
-          const data = await res.json();
-
-          if (!data.success) {
-            msg.textContent = data.message || "خطأ أثناء الإضافة";
-            msg.className = "text-sm text-rose-400";
-            return;
-          }
-
-          msg.textContent = "تمت إضافة المنتج بنجاح ✅";
-          msg.className = "text-sm text-emerald-400";
-
-          form.reset();
-          loadProducts();
+        document.getElementById("logoutBtn").onclick = () => {
+          localStorage.removeItem("currentUser");
+          window.location.href = "login.html";
         };
       }
 
-      // ===== MAIN =====
+      /* -------- رفع الصورة -------- */
+      document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("productImage").onchange = function () {
+          const img = document.getElementById("previewImg");
+          img.src = URL.createObjectURL(this.files[0]);
+          img.classList.remove("hidden");
+        };
+      });
+
+      /* -------- تحميل المنتجات -------- */
+      async function loadProducts() {
+        const box = document.getElementById("adminProductsList");
+        box.innerHTML = "";
+
+        const res = await fetch(`${API_BASE}/api/products`);
+        const data = await res.json();
+
+        if (!data.length) {
+          box.innerHTML = `<p class="text-slate-400">لا يوجد منتجات</p>`;
+          return;
+        }
+
+        data.forEach((p) => {
+          box.innerHTML += `
+            <div class="bg-slate-700 p-3 rounded-lg flex justify-between">
+              <div>
+                <div class="font-bold">${p.name}</div>
+                <div class="text-slate-300">${p.price} ر.س – ${p.category}</div>
+              </div>
+              <span class="text-xs text-slate-400">ID: ${p.id}</span>
+            </div>
+          `;
+        });
+      }
+
+      /* -------- تحميل المستخدمين -------- */
+      async function loadUsers() {
+        const box = document.getElementById("usersList");
+        box.innerHTML = "";
+
+        const res = await fetch(`${API_BASE}/api/users`);
+        const users = await res.json();
+
+        users.forEach((u) => {
+          box.innerHTML += `
+            <div class="bg-slate-700 p-3 rounded-lg flex justify-between">
+              <div>
+                <div class="font-bold">${u.name}</div>
+                <div class="text-slate-300">${u.email}</div>
+              </div>
+              <span class="text-xs text-slate-400">Role: ${u.role}</span>
+            </div>
+          `;
+        });
+      }
+
+      /* -------- إرسال المنتج -------- */
+      function setupAddForm() {
+        const form = document.getElementById("addProductForm");
+        const msg = document.getElementById("formMsg");
+
+        form.onsubmit = async (e) => {
+          e.preventDefault();
+
+          const data = new FormData(form);
+
+          const body = {
+            name: data.get("name"),
+            price: data.get("price"),
+            category: data.get("category"),
+            description: data.get("description"),
+            image: document.getElementById("productImage").value.replace("C:\\\\fakepath\\\\", "")
+          };
+
+          const res = await fetch(`${API_BASE}/api/products`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(body)
+          });
+
+          const result = await res.json();
+
+          if (result.success) {
+            msg.textContent = "✔ تمت إضافة المنتج بنجاح";
+            msg.className = "text-emerald-400";
+            form.reset();
+            loadProducts();
+            document.getElementById("previewImg").classList.add("hidden");
+          } else {
+            msg.textContent = "حدث خطأ";
+            msg.className = "text-rose-400";
+          }
+        };
+      }
+
+      /* -------- تشغيل كل شيء -------- */
       document.addEventListener("DOMContentLoaded", () => {
         const user = requireAdmin();
-        if (!user) return;
-
         setupHeader(user);
+
+        setupAddForm();
         loadProducts();
         loadUsers();
-        setupAddProductForm();
       });
     </script>
   </body>

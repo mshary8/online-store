@@ -1,81 +1,45 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <title>إنشاء حساب جديد - المتجر</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body class="auth-body">
-    <div class="auth-card">
-      <h1>إنشاء حساب جديد</h1>
+<head>
+  <meta charset="UTF-8">
+  <title>تسجيل جديد</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
 
-      <form id="registerForm" class="auth-form">
-        <label>
-          الاسم الكامل
-          <input type="text" id="regName" required />
-        </label>
+<body class="bg-slate-900 text-white flex items-center justify-center min-h-screen">
 
-        <label>
-          البريد الإلكتروني
-          <input type="email" id="regEmail" required />
-        </label>
+  <div class="login-box">
+    <h1>تسجيل جديد</h1>
 
-        <label>
-          كلمة المرور
-          <input type="password" id="regPassword" required />
-        </label>
+    <input id="name" placeholder="الاسم">
+    <input id="email" placeholder="البريد الإلكتروني">
+    <input id="password" type="password" placeholder="كلمة المرور">
 
-        <button type="submit" class="btn-primary">تسجيل</button>
+    <button onclick="register()">تسجيل</button>
 
-        <p class="auth-switch">
-          لديك حساب بالفعل؟ <a href="login.html">تسجيل الدخول</a>
-        </p>
+    <p id="msg" class="msg"></p>
 
-        <p id="regMessage" class="auth-message"></p>
-      </form>
-    </div>
+    <a href="login.html" class="link">تسجيل الدخول</a>
+  </div>
 
-    <script>
-      const regForm = document.getElementById("registerForm");
-      const regMsg = document.getElementById("regMessage");
+  <script>
+    async function register() {
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
 
-      regForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        regMsg.textContent = "";
-        regMsg.classList.remove("error");
-
-        const name = document.getElementById("regName").value.trim();
-        const email = document.getElementById("regEmail").value.trim();
-        const password = document.getElementById("regPassword").value.trim();
-
-        try {
-          const res = await fetch("/api/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, email, password }),
-          });
-
-          const data = await res.json();
-
-          if (!res.ok || !data.success) {
-            regMsg.textContent =
-              data.message || "لم يتم إنشاء الحساب";
-            regMsg.classList.add("error");
-            return;
-          }
-
-          regMsg.textContent =
-            data.message || "تم إنشاء الحساب بنجاح ✅";
-
-          setTimeout(() => {
-            window.location.href = "login.html";
-          }, 2000);
-        } catch (err) {
-          console.error(err);
-          regMsg.textContent = "حدث خطأ في الاتصال بالسيرفر";
-          regMsg.classList.add("error");
-        }
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ name, email, password })
       });
-    </script>
-  </body>
+
+      const data = await res.json();
+
+      document.getElementById("msg").textContent =
+        data.success ? "تم التسجيل بنجاح" : "البريد مستخدم مسبقاً";
+    }
+  </script>
+
+</body>
 </html>

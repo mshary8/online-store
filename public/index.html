@@ -1,70 +1,37 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Meshari Tech Store</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <title>Meshari Tech Store</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
 
-  <body>
-    <!-- Header -->
-    <header class="header">
-      <div class="logo">Meshari <span>Tech Store</span></div>
+<body class="bg-main text-white">
 
-      <nav class="nav">
-        <a href="index.html">الرئيسية</a>
-        <a href="login.html">تسجيل الدخول</a>
-        <a href="register.html">تسجيل جديد</a>
-        <a href="cart.html">السلة (<span id="cartCount">0</span>)</a>
-      </nav>
-    </header>
+  <!-- HEADER -->
+  <header class="header">
+    <h1 class="logo">Meshari <span>Tech Store</span></h1>
 
-    <!-- Products Section -->
-    <div class="container">
-      <!-- Left Sidebar -->
-      <aside class="sidebar">
-        <button id="showAllBtn" class="btn-showall">عرض جميع المنتجات</button>
+    <nav class="nav">
+      <a href="index.html">الرئيسية</a>
+      <a href="login.html">تسجيل الدخول</a>
+      <a href="register.html">تسجيل جديد</a>
 
-        <h3 class="side-title">الأصناف</h3>
+      <a href="cart.html" class="cart-btn">
+        السلة (<span id="cartCount">0</span>)
+      </a>
+    </nav>
+  </header>
 
-        <ul class="side-list">
-          <li data-cat="الكترونيات">⚡ الالكترونيات</li>
-          <li data-cat="لابتوبات">💻 اللابتوبات</li>
-          <li data-cat="جوالات">📱 الجوالات</li>
-          <li data-cat="شاشات">🖥 الشاشات</li>
-          <li data-cat="سماعات">🎧 السماعات</li>
+  <main class="container">
 
-          <li data-cat="أجهزة ترفيهية">🎮 أجهزة اللعب (Sony / Xbox)</li>
-          <li data-cat="اكسسوارات">🔌 إكسسوارات التقنية</li>
-          <li data-cat="اشتراكات">🖥 اشتراكات قنوات المشاهدة</li>
-        </ul>
-      </aside>
+    <h2 class="title">جميع المنتجات</h2>
 
-      <!-- Main Content -->
-      <main class="main">
-        <h2 class="section-title">جميع المنتجات</h2>
-        <p id="countProducts" class="count">0 منتج</p>
+    <div id="productsGrid" class="products-grid"></div>
 
-        <!-- Filters -->
-        <div class="filters">
-          <input type="text" id="searchInput" placeholder="ابحث باسم المنتج أو الوصف..." />
+  </main>
 
-          <input type="number" id="minPrice" placeholder="من السعر" />
-          <input type="number" id="maxPrice" placeholder="إلى السعر" value="5000" />
-
-          <button id="applyFilterBtn">تطبيق الفلتر</button>
-          <button id="resetFilterBtn" class="reset-btn">إعادة تعيين</button>
-        </div>
-
-        <!-- Products Grid -->
-        <div id="productsGrid" class="products-grid"></div>
-      </main>
-    </div>
-
-    <footer class="footer">
-      متجر مشاري للتقنية © 2025
-    </footer>
-
-    <script src="main.js"></script>
-  </body>
+  <script src="main.js"></script>
+</body>
 </html>

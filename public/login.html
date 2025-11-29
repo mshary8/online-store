@@ -6,47 +6,42 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-slate-900 text-white min-h-screen flex justify-center items-center">
-  <div class="bg-slate-800 p-8 rounded-xl w-96">
+<body class="bg-slate-900 text-white flex items-center justify-center min-h-screen">
 
-    <h2 class="text-center text-xl font-bold mb-6">تسجيل الدخول</h2>
+  <div class="login-box">
+    <h1>تسجيل الدخول</h1>
 
-    <input id="email" class="w-full p-2 rounded mb-3 bg-slate-700" placeholder="البريد الإلكتروني">
-    <input id="password" type="password" class="w-full p-2 rounded mb-3 bg-slate-700" placeholder="كلمة المرور">
+    <input id="email" placeholder="البريد الإلكتروني">
+    <input id="password" type="password" placeholder="كلمة المرور">
 
-    <button onclick="login()" class="w-full bg-indigo-500 py-2 rounded-lg">دخول</button>
+    <button onclick="login()">دخول</button>
 
-    <p id="msg" class="text-center text-red-400 mt-4"></p>
+    <p id="msg" class="msg"></p>
 
+    <a href="register.html" class="link">إنشاء حساب جديد</a>
   </div>
 
   <script>
-    async function login(){
+    async function login() {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
-      const msg = document.getElementById("msg");
 
       const res = await fetch("/api/login", {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({email,password})
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ email, password })
       });
 
       const data = await res.json();
-
-      if(!data.success){
-        msg.textContent = data.message;
+      if (!data.success) {
+        document.getElementById("msg").textContent = "خطأ في تسجيل الدخول";
         return;
       }
 
-      localStorage.setItem("user", JSON.stringify(data));
-
-      if(data.role === "admin"){
-        window.location.href = "admin.html";
-      } else {
-        window.location.href = "index.html";
-      }
+      localStorage.setItem("currentUser", JSON.stringify(data.user));
+      window.location.href = "index.html";
     }
   </script>
+
 </body>
 </html>

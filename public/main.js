@@ -1,156 +1,77 @@
-//-----------------------------------------------------
-// CONFIG
-//-----------------------------------------------------
-const API_BASE = "";
+let cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-//-----------------------------------------------------
-// GET /api/products
-//-----------------------------------------------------
-async function fetchProducts() {
-  try {
-    const res = await fetch(`${API_BASE}/api/products`);
-    return await res.json();
-  } catch (err) {
-    console.error("Error loading products:", err);
-    return [];
-  }
-}
-
-//-----------------------------------------------------
-// ADD TO CART
-//-----------------------------------------------------
-function loadCart() {
-  return JSON.parse(localStorage.getItem("cart") || "[]");
-}
-
-function saveCart(cart) {
+function saveCart() {
   localStorage.setItem("cart", JSON.stringify(cart));
-  updateCartBadge();
+  updateCartCount();
 }
 
-function addToCart(product) {
-  let cart = loadCart();
-
-  const existing = cart.find((item) => item.id === product.id);
-  if (existing) {
-    existing.qty += 1;
-  } else {
-    cart.push({ ...product, qty: 1 });
-  }
-
-  saveCart(cart);
-  alert("تمت إضافة المنتج إلى السلة");
-}
-
-function updateCartBadge() {
-  const count = loadCart().reduce((sum, p) => sum + p.qty, 0);
+function updateCartCount() {
   const el = document.getElementById("cartCount");
-  if (el) el.textContent = count;
+  if (el) el.textContent = cart.length;
 }
 
-//-----------------------------------------------------
-// RENDER PRODUCT CARD
-//-----------------------------------------------------
-function createProductCard(product) {
-  return `
-    <div class="product-card">
-      <div class="product-img"></div>
+updateCartCount();
 
-      <h3 class="product-name">${product.name}</h3>
-
-      <p class="product-price">${product.price} ر.س</p>
-
-      <button class="add-btn" onclick='addToCart(${JSON.stringify(product)})'>
-        إضافة للسلة
-      </button>
-    </div>
-  `;
-}
-
-//-----------------------------------------------------
-// DISPLAY PRODUCTS
-//-----------------------------------------------------
-function displayProducts(products) {
+/* ---- تحميل المنتجات ---- */
+async function loadProducts() {
   const grid = document.getElementById("productsGrid");
-  const count = document.getElementById("countProducts");
+  if (!grid) return;
 
-  if (!products.length) {
-    grid.innerHTML = `<p class="no-products">لا يوجد منتجات مطابقة للبحث</p>`;
-    count.textContent = "0 منتج";
-    return;
-  }
+  const res = await fetch("/api/products");
+  const products = await res.json();
 
-  grid.innerHTML = products.map(createProductCard).join("");
-  count.textContent = `${products.length} منتج`;
-}
+  grid.innerHTML = "";
 
-//-----------------------------------------------------
-// FILTERS
-//-----------------------------------------------------
-function applyFilters(allProducts) {
-  const search = document.getElementById("searchInput").value.trim();
-  const minPrice = Number(document.getElementById("minPrice").value);
-  const maxPrice = Number(document.getElementById("maxPrice").value);
+  products.forEach((p) => {
+    grid.innerHTML += `
+      <div class="product-card">
+        <div class="prod-img"></div>
 
-  return allProducts.filter((p) => {
-    const matchText =
-      p.name.includes(search) ||
-      (p.description && p.description.includes(search));
+        <h3>${p.name}</h3>
+        <p class="price">${p.price} ر.س</p>
 
-    const matchPrice =
-      (!minPrice || p.price >= minPrice) &&
-      (!maxPrice || p.price <= maxPrice);
-
-    return matchText && matchPrice;
+        <button onclick='addToCart(${p.id})'>إضافة للسلة</button>
+      </div>
+    `;
   });
 }
 
-//-----------------------------------------------------
-// CATEGORY FILTER
-//-----------------------------------------------------
-function filterByCategory(allProducts, category) {
-  return allProducts.filter((p) => p.category === category);
+/* ---- إضافة للسلة ---- */
+async function addToCart(id) {
+  const res = await fetch("/api/products");
+  const products = await res.json();
+
+  const p = products.find((x) => x.id === id);
+  cart.push(p);
+
+  saveCart();
 }
 
-//-----------------------------------------------------
-// MAIN LOAD
-//-----------------------------------------------------
-document.addEventListener("DOMContentLoaded", async () => {
-  let allProducts = await fetchProducts();
+/* ---- عرض السلة ---- */
+function loadCart() {
+  const box = document.getElementById("cartItems");
+  if (!box) return;
 
-  displayProducts(allProducts);
-  updateCartBadge();
+  box.innerHTML = "";
 
-  // Apply filters
-  document
-    .getElementById("applyFilterBtn")
-    .addEventListener("click", () => {
-      const result = applyFilters(allProducts);
-      displayProducts(result);
-    });
-
-  // Reset filters
-  document
-    .getElementById("resetFilterBtn")
-    .addEventListener("click", () => {
-      document.getElementById("searchInput").value = "";
-      document.getElementById("minPrice").value = "";
-      document.getElementById("maxPrice").value = "5000";
-
-      displayProducts(allProducts);
-    });
-
-  // Category sidebar
-  document.querySelectorAll(".side-list li").forEach((li) => {
-    li.addEventListener("click", () => {
-      const cat = li.getAttribute("data-cat");
-      const filtered = filterByCategory(allProducts, cat);
-      displayProducts(filtered);
-    });
+  cart.forEach((item, i) => {
+    box.innerHTML += `
+      <div class="cart-item">
+        <h3>${item.name}</h3>
+        <p>${item.price} ر.س</p>
+        <button onclick="removeItem(${i})">حذف</button>
+      </div>
+    `;
   });
+}
 
-  // Show all
-  document.getElementById("showAllBtn").addEventListener("click", () => {
-    displayProducts(allProducts);
-  });
+function removeItem(i) {
+  cart.splice(i, 1);
+  saveCart();
+  loadCart();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadProducts();
+  loadCart();
 });
