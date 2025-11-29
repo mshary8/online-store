@@ -1,265 +1,87 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <title>لوحة الإدارة - Meshari Store</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <title>لوحة الإدارة - Al-Mashari Electronics</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-900 text-slate-100">
 
-  <body class="bg-slate-900 text-white min-h-screen">
-    <!-- HEADER -->
-    <header class="bg-slate-800 px-6 py-4 flex justify-between items-center shadow">
-      <h1 class="text-xl font-bold">لوحة الإدارة</h1>
+  <header class="bg-slate-800 px-6 py-4 flex items-center justify-between">
+    <div>
+      <h1 class="text-xl font-bold">لوحة إدارة المتجر</h1>
+      <p class="text-xs text-slate-400">Al-Mashari Electronics</p>
+    </div>
 
-      <div class="flex items-center gap-4">
-        <span id="adminName" class="text-slate-300"></span>
+    <div class="flex items-center gap-4 text-sm">
+      <span id="adminName" class="text-slate-300"></span>
+      <button
+        id="logoutBtn"
+        class="px-3 py-1 rounded-lg bg-rose-500 hover:bg-rose-600 text-xs">
+        تسجيل الخروج
+      </button>
+      <a
+        href="index.html"
+        class="px-3 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-xs">
+        العودة للمتجر
+      </a>
+    </div>
+  </header>
 
-        <button
-          id="logoutBtn"
-          class="bg-rose-500 hover:bg-rose-600 px-3 py-1 rounded-lg text-sm"
-        >
-          تسجيل الخروج
-        </button>
+  <main class="max-w-6xl mx-auto py-8 px-4 space-y-8">
 
-        <a
-          href="index.html"
-          class="px-3 py-1 rounded-lg bg-slate-700 text-sm hover:bg-slate-600"
-        >
-          المتجر
-        </a>
-      </div>
-    </header>
+    <section class="bg-slate-800 rounded-2xl p-6 shadow-lg shadow-slate-900/50">
+      <h2 class="text-lg font-semibold mb-4">إضافة منتج جديد</h2>
 
-    <!-- MAIN -->
-    <main class="max-w-5xl mx-auto py-10 space-y-10 px-4">
+      <form id="addProductForm" class="grid md:grid-cols-2 gap-4" enctype="multipart/form-data">
+        <div>
+          <label class="block mb-1 text-xs text-slate-300">اسم المنتج</label>
+          <input name="name" class="w-full rounded-lg px-3 py-2 bg-slate-900 border border-slate-700 text-sm" required />
+        </div>
 
-      <!-- إضافة منتج -->
-      <section class="bg-slate-800 rounded-2xl p-6 shadow-lg">
-        <h2 class="text-lg font-semibold mb-4">إضافة منتج جديد</h2>
+        <div>
+          <label class="block mb-1 text-xs text-slate-300">السعر (ر.س)</label>
+          <input name="price" type="number" class="w-full rounded-lg px-3 py-2 bg-slate-900 border border-slate-700 text-sm" required />
+        </div>
 
-        <form id="addProductForm" class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="block mb-1 text-xs text-slate-300">الفئة</label>
+          <select name="category" class="w-full rounded-lg px-3 py-2 bg-slate-900 border border-slate-700 text-sm">
+            <option value="">بدون</option>
+            <option value="laptops">لابتوبات</option>
+            <option value="phones">جوالات</option>
+            <option value="audio">سماعات</option>
+            <option value="watches">ساعات</option>
+            <option value="printers">طابعات</option>
+          </select>
+        </div>
 
-          <!-- اسم المنتج -->
-          <div>
-            <label class="block mb-1 text-sm">اسم المنتج</label>
-            <input
-              name="name"
-              required
-              class="w-full bg-slate-700 rounded-lg p-2 border border-slate-600"
-            />
-          </div>
+        <div>
+          <label class="block mb-1 text-xs text-slate-300">صورة المنتج</label>
+          <input name="image" type="file" accept="image/*" class="w-full text-xs text-slate-300" />
+        </div>
 
-          <!-- السعر -->
-          <div>
-            <label class="block mb-1 text-sm">السعر (ر.س)</label>
-            <input
-              name="price"
-              type="number"
-              required
-              class="w-full bg-slate-700 rounded-lg p-2 border border-slate-600"
-            />
-          </div>
+        <div class="md:col-span-2">
+          <label class="block mb-1 text-xs text-slate-300">الوصف</label>
+          <textarea name="description" rows="3" class="w-full rounded-lg px-3 py-2 bg-slate-900 border border-slate-700 text-sm"></textarea>
+        </div>
 
-          <!-- القسم -->
-          <div>
-            <label class="block mb-1 text-sm">القسم/الفئة</label>
-            <input
-              name="category"
-              required
-              class="w-full bg-slate-700 rounded-lg p-2 border border-slate-600"
-            />
-          </div>
+        <p id="formMsg" class="text-xs md:col-span-2"></p>
 
-          <!-- رفع صورة -->
-          <div>
-            <label class="block mb-1 text-sm">صورة المنتج</label>
+        <div class="md:col-span-2 flex justify-end">
+          <button class="px-5 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-sm font-semibold">
+            إضافة المنتج
+          </button>
+        </div>
+      </form>
+    </section>
 
-            <input
-              id="productImage"
-              type="file"
-              accept="image/*"
-              class="w-full bg-slate-700 rounded-lg p-2 border border-slate-600"
-            />
+    <section class="bg-slate-800 rounded-2xl p-6 shadow-lg shadow-slate-900/50">
+      <h2 class="text-lg font-semibold mb-4">المنتجات الحالية</h2>
+      <div id="adminProductsList" class="space-y-3 text-sm"></div>
+    </section>
+  </main>
 
-            <img
-              id="previewImg"
-              class="hidden mt-3 w-full h-40 rounded-lg object-cover border border-slate-600"
-            />
-          </div>
-
-          <!-- الوصف -->
-          <div class="md:col-span-2">
-            <label class="block mb-1 text-sm">الوصف</label>
-            <textarea
-              name="description"
-              rows="3"
-              class="w-full bg-slate-700 rounded-lg p-2 border border-slate-600"
-            ></textarea>
-          </div>
-
-          <p id="formMsg" class="md:col-span-2 text-sm"></p>
-
-          <div class="md:col-span-2 flex justify-end">
-            <button
-              class="bg-indigo-500 hover:bg-indigo-600 px-6 py-2 rounded-lg font-semibold"
-            >
-              إضافة المنتج
-            </button>
-          </div>
-        </form>
-      </section>
-
-      <!-- قائمة المنتجات -->
-      <section class="bg-slate-800 rounded-2xl p-6 shadow-lg">
-        <h2 class="text-lg font-semibold mb-4">المنتجات الحالية</h2>
-        <div id="adminProductsList" class="space-y-3"></div>
-      </section>
-
-      <!-- المستخدمين -->
-      <section class="bg-slate-800 rounded-2xl p-6 shadow-lg">
-        <h2 class="text-lg font-semibold mb-4">المستخدمون المسجلون</h2>
-        <div id="usersList" class="space-y-3"></div>
-      </section>
-
-    </main>
-
-    <!-- SCRIPTS -->
-    <script>
-      const API_BASE = "";
-
-      /* -------- Current User -------- */
-      function getCurrentUser() {
-        try {
-          return JSON.parse(localStorage.getItem("currentUser")) || null;
-        } catch {
-          return null;
-        }
-      }
-
-      function requireAdmin() {
-        const user = getCurrentUser();
-        if (!user || user.role !== "admin") {
-          window.location.href = "login.html";
-        }
-        return user;
-      }
-
-      function setupHeader(user) {
-        if (!user) return;
-
-        const nameSpan = document.getElementById("adminName");
-        nameSpan.textContent = "مرحباً، " + user.name + " (أدمن)";
-
-        document.getElementById("logoutBtn").onclick = () => {
-          localStorage.removeItem("currentUser");
-          window.location.href = "login.html";
-        };
-      }
-
-      /* -------- رفع الصورة -------- */
-      document.addEventListener("DOMContentLoaded", () => {
-        document.getElementById("productImage").onchange = function () {
-          const img = document.getElementById("previewImg");
-          img.src = URL.createObjectURL(this.files[0]);
-          img.classList.remove("hidden");
-        };
-      });
-
-      /* -------- تحميل المنتجات -------- */
-      async function loadProducts() {
-        const box = document.getElementById("adminProductsList");
-        box.innerHTML = "";
-
-        const res = await fetch(`${API_BASE}/api/products`);
-        const data = await res.json();
-
-        if (!data.length) {
-          box.innerHTML = `<p class="text-slate-400">لا يوجد منتجات</p>`;
-          return;
-        }
-
-        data.forEach((p) => {
-          box.innerHTML += `
-            <div class="bg-slate-700 p-3 rounded-lg flex justify-between">
-              <div>
-                <div class="font-bold">${p.name}</div>
-                <div class="text-slate-300">${p.price} ر.س – ${p.category}</div>
-              </div>
-              <span class="text-xs text-slate-400">ID: ${p.id}</span>
-            </div>
-          `;
-        });
-      }
-
-      /* -------- تحميل المستخدمين -------- */
-      async function loadUsers() {
-        const box = document.getElementById("usersList");
-        box.innerHTML = "";
-
-        const res = await fetch(`${API_BASE}/api/users`);
-        const users = await res.json();
-
-        users.forEach((u) => {
-          box.innerHTML += `
-            <div class="bg-slate-700 p-3 rounded-lg flex justify-between">
-              <div>
-                <div class="font-bold">${u.name}</div>
-                <div class="text-slate-300">${u.email}</div>
-              </div>
-              <span class="text-xs text-slate-400">Role: ${u.role}</span>
-            </div>
-          `;
-        });
-      }
-
-      /* -------- إرسال المنتج -------- */
-      function setupAddForm() {
-        const form = document.getElementById("addProductForm");
-        const msg = document.getElementById("formMsg");
-
-        form.onsubmit = async (e) => {
-          e.preventDefault();
-
-          const data = new FormData(form);
-
-          const body = {
-            name: data.get("name"),
-            price: data.get("price"),
-            category: data.get("category"),
-            description: data.get("description"),
-            image: document.getElementById("productImage").value.replace("C:\\\\fakepath\\\\", "")
-          };
-
-          const res = await fetch(`${API_BASE}/api/products`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(body)
-          });
-
-          const result = await res.json();
-
-          if (result.success) {
-            msg.textContent = "✔ تمت إضافة المنتج بنجاح";
-            msg.className = "text-emerald-400";
-            form.reset();
-            loadProducts();
-            document.getElementById("previewImg").classList.add("hidden");
-          } else {
-            msg.textContent = "حدث خطأ";
-            msg.className = "text-rose-400";
-          }
-        };
-      }
-
-      /* -------- تشغيل كل شيء -------- */
-      document.addEventListener("DOMContentLoaded", () => {
-        const user = requireAdmin();
-        setupHeader(user);
-
-        setupAddForm();
-        loadProducts();
-        loadUsers();
-      });
-    </script>
-  </body>
+  <script src="admin.js"></script>
+</body>
 </html>

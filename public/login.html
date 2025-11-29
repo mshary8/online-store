@@ -1,47 +1,78 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>تسجيل الدخول</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <title>تسجيل الدخول - Al-Mashari Electronics</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
-
-<body class="bg-slate-900 text-white flex items-center justify-center min-h-screen">
-
-  <div class="login-box">
+<body class="auth-body">
+  <div class="auth-card">
     <h1>تسجيل الدخول</h1>
 
-    <input id="email" placeholder="البريد الإلكتروني">
-    <input id="password" type="password" placeholder="كلمة المرور">
+    <form id="loginForm" class="auth-form">
+      <label>
+        البريد الإلكتروني
+        <input type="email" id="loginEmail" required />
+      </label>
 
-    <button onclick="login()">دخول</button>
+      <label>
+        كلمة المرور
+        <input type="password" id="loginPassword" required />
+      </label>
 
-    <p id="msg" class="msg"></p>
+      <button type="submit" class="btn-primary full">دخول</button>
 
-    <a href="register.html" class="link">إنشاء حساب جديد</a>
+      <p class="auth-switch">
+        ليس لديك حساب؟ <a href="register.html">إنشاء حساب جديد</a>
+      </p>
+
+      <p id="loginMessage" class="auth-message"></p>
+    </form>
   </div>
 
   <script>
-    async function login() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+    const loginForm = document.getElementById("loginForm");
+    const loginMsg = document.getElementById("loginMessage");
 
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ email, password })
-      });
-
-      const data = await res.json();
-      if (!data.success) {
-        document.getElementById("msg").textContent = "خطأ في تسجيل الدخول";
-        return;
-      }
-
-      localStorage.setItem("currentUser", JSON.stringify(data.user));
-      window.location.href = "index.html";
+    function saveCurrentUser(user) {
+      localStorage.setItem("currentUser", JSON.stringify(user));
     }
-  </script>
 
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      loginMsg.textContent = "";
+
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+
+      try {
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+          loginMsg.textContent = data.message || "خطأ في تسجيل الدخول";
+          loginMsg.classList.add("error");
+          return;
+        }
+
+        saveCurrentUser(data.user);
+
+        if (data.user.role === "admin") {
+          window.location.href = "admin.html";
+        } else {
+          window.location.href = "index.html";
+        }
+      } catch (err) {
+        console.error(err);
+        loginMsg.textContent = "خطأ في الاتصال بالسيرفر";
+        loginMsg.classList.add("error");
+      }
+    });
+  </script>
 </body>
 </html>

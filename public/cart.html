@@ -1,28 +1,134 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>السلة</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <title>سلة المشتريات - Al-Mashari Electronics</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
+<body class="store-body">
 
-<body class="bg-main text-white">
-
-  <header class="header">
-    <h1 class="logo">Meshari <span>Tech Store</span></h1>
-
-    <a href="index.html" class="nav">العودة</a>
+  <header class="topbar">
+    <div class="top-left">
+      <a href="index.html" class="top-link">العودة للمتجر</a>
+    </div>
+    <h1 class="store-name">سلة المشتريات</h1>
+    <div class="top-right">
+      <span class="top-link">Al-Mashari Electronics</span>
+    </div>
   </header>
 
-  <main class="container">
-
-    <h2 class="title">السلة</h2>
-
-    <div id="cartItems" class="space-y-4"></div>
-
+  <main class="cart-main">
+    <div id="cartContent" class="cart-card"></div>
   </main>
 
-  <script src="main.js"></script>
+  <footer class="store-footer">
+    &copy; 2025 Al-Mashari Electronics
+  </footer>
+
+  <script>
+    function getCart() {
+      try {
+        return JSON.parse(localStorage.getItem("cart") || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function saveCart(cart) {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+
+    function updateCartBadgeOnCartPage() {
+      // not needed here, but kept for future
+    }
+
+    function formatPrice(v) {
+      return v.toLocaleString("ar-SA", { minimumFractionDigits: 2 });
+    }
+
+    function renderCart() {
+      const container = document.getElementById("cartContent");
+      const cart = getCart();
+
+      if (!cart.length) {
+        container.innerHTML = `
+          <p class="empty-message">سلتك فارغة حالياً 🛒</p>
+          <a href="index.html" class="btn-primary">العودة للتسوق</a>
+        `;
+        return;
+      }
+
+      let total = 0;
+      const rows = cart
+        .map((item, idx) => {
+          const sub = item.price * item.quantity;
+          total += sub;
+          return `
+            <div class="cart-item-row">
+              <div class="cart-item-info">
+                <div class="cart-item-name">${item.name}</div>
+                <div class="cart-item-meta">
+                  السعر: ${formatPrice(item.price)} ر.س • الكمية: ${item.quantity}
+                </div>
+              </div>
+              <div class="cart-item-actions">
+                <button data-index="${idx}" data-action="dec">−</button>
+                <span>${item.quantity}</span>
+                <button data-index="${idx}" data-action="inc">+</button>
+                <button data-index="${idx}" data-action="remove">حذف</button>
+                <span class="cart-item-sub">${formatPrice(sub)} ر.س</span>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+
+      container.innerHTML = `
+        <div class="cart-items">
+          ${rows}
+        </div>
+        <div class="cart-summary">
+          <div>المجموع الكلي: <strong>${formatPrice(total)} ر.س</strong></div>
+          <div class="cart-summary-actions">
+            <button id="clearCartBtn" class="btn-secondary">مسح السلة</button>
+            <button id="checkoutBtn" class="btn-primary">إتمام الطلب (تجريبي)</button>
+          </div>
+        </div>
+      `;
+
+      container.addEventListener("click", (e) => {
+        const btn = e.target.closest("button");
+        if (!btn) return;
+
+        const idx = Number(btn.getAttribute("data-index"));
+        const action = btn.getAttribute("data-action");
+        let cart = getCart();
+        if (!cart[idx]) return;
+
+        if (action === "inc") cart[idx].quantity += 1;
+        if (action === "dec") cart[idx].quantity -= 1;
+        if (action === "remove" || cart[idx].quantity <= 0) {
+          cart.splice(idx, 1);
+        }
+
+        saveCart(cart);
+        renderCart();
+      });
+
+      document.getElementById("clearCartBtn").onclick = () => {
+        if (!confirm("هل تريد مسح السلة بالكامل؟")) return;
+        saveCart([]);
+        renderCart();
+      };
+
+      document.getElementById("checkoutBtn").onclick = () => {
+        alert("تم تسجيل طلبك (تجريبي). يمكنك إضافة الدفع لاحقاً.");
+      };
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderCart();
+    });
+  </script>
 </body>
 </html>

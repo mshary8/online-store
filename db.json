@@ -1,13 +1,4 @@
 {
-  "users": [
-    {
-      "id": 1,
-      "name": "Meshari",
-      "email": "meshari@gmail.com",
-      "password": "1234561",
-      "role": "admin"
-    }
-  ],
-  "products": [],
-  "orders": []
+  "users": [],
+  "products": []
 }
