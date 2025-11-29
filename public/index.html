@@ -1,46 +1,366 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <title>متجر بسيط | Simple Store</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <header class="navbar">
-    <div class="container nav-content">
-      <div class="logo">متجر بسيط</div>
-      <nav>
+  <head>
+    <meta charset="UTF-8" />
+    <title>المتجر الإلكتروني</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="store-body">
+    <!-- هيدر -->
+    <header class="store-header">
+      <div class="store-logo">Meshari Tech Store</div>
+      <nav class="store-nav">
         <a href="index.html">الرئيسية</a>
-        <a href="cart.html">السلة (<span id="cart-count">0</span>)</a>
-        <a href="admin.html">لوحة الإدارة</a>
+        <a href="login.html">تسجيل الدخول</a>
+        <a href="register.html">تسجيل جديد</a>
       </nav>
-    </div>
-  </header>
+    </header>
 
-  <section class="hero">
-    <div class="container hero-inner">
-      <div>
-        <h1>أهلاً بك في متجرك الإلكتروني</h1>
-        <p>متجر بسيط متكامل لعرض المنتجات، إضافة للسلة، وتجهيز الطلب.</p>
-      </div>
-    </div>
-  </section>
+    <!-- المحتوى -->
+    <div class="store-layout">
+      <!-- القائمة الجانبية (Sidebar) -->
+      <aside class="store-sidebar">
+        <h3 class="sidebar-title">الأصناف</h3>
 
-  <main class="container">
-    <h2 class="section-title">المنتجات</h2>
-    <div id="product-list" class="product-grid">
-      <!-- Products will be injected here by main.js -->
-    </div>
-  </main>
+        <button class="category-item active" data-category="all" data-group="all">
+          🛒 عرض جميع المنتجات
+        </button>
 
-  <footer class="footer">
-    <div class="container">
-      <p>متجر تجريبي للتعلم &copy; 2025</p>
-    </div>
-  </footer>
+        <div class="category-group">
+          <div class="category-group-title group-electronics">
+            ⚡ الإلكترونيات
+          </div>
+          <button
+            class="category-item"
+            data-category="إلكترونيات - لابتوبات"
+            data-group="electronics"
+          >
+            💻 لابتوبات
+          </button>
+          <button
+            class="category-item"
+            data-category="إلكترونيات - جوالات"
+            data-group="electronics"
+          >
+            📱 الجوالات
+          </button>
+          <button
+            class="category-item"
+            data-category="إلكترونيات - سماعات"
+            data-group="electronics"
+          >
+            🎧 السماعات
+          </button>
+          <button
+            class="category-item"
+            data-category="إلكترونيات - أجهزة ترفيه (Sony / Xbox)"
+            data-group="electronics"
+          >
+            🎮 أجهزة الترفيه (Sony / Xbox)
+          </button>
+          <button
+            class="category-item"
+            data-category="إلكترونيات - شاشات عرض"
+            data-group="electronics"
+          >
+            🖥️ شاشات العرض
+          </button>
+          <button
+            class="category-item"
+            data-category="إلكترونيات - ساعات ذكية"
+            data-group="electronics"
+          >
+            ⌚ الساعات الذكية
+          </button>
+          <button
+            class="category-item"
+            data-category="إلكترونيات - لوحات مفاتيح وفأرات"
+            data-group="electronics"
+          >
+            ⌨️ لوحات مفاتيح / فأرات
+          </button>
+          <button
+            class="category-item"
+            data-category="إلكترونيات - أجهزة شبكة (راوتر/واي فاي)"
+            data-group="electronics"
+          >
+            📡 أجهزة الشبكة (راوتر/واي فاي)
+          </button>
+          <button
+            class="category-item"
+            data-category="إلكترونيات - إكسسوارات (كابلات وحافظات)"
+            data-group="electronics"
+          >
+            🔌 الإكسسوارات (كابلات / حافظات)
+          </button>
+        </div>
 
-  <script src="main.js"></script>
-</body>
+        <div class="category-group">
+          <div class="category-group-title group-subscriptions">
+            🎬 الاشتراكات
+          </div>
+          <button
+            class="category-item"
+            data-category="اشتراكات - تطبيقات مشاهدة"
+            data-group="subscriptions"
+          >
+            📺 اشتراكات تطبيقات المشاهدة
+          </button>
+        </div>
+      </aside>
+
+      <!-- منطقة المنتجات -->
+      <main class="store-main">
+        <!-- شريط الفلاتر أعلى المنتجات -->
+        <section class="filters-bar">
+          <div class="filters-left">
+            <h2 id="productsTitle">جميع المنتجات</h2>
+            <span id="productsCount" class="products-count"></span>
+          </div>
+          <div class="filters-right">
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="ابحث باسم المنتج أو الوصف..."
+            />
+            <input
+              type="number"
+              id="minPrice"
+              placeholder="السعر من"
+              min="0"
+            />
+            <input
+              type="number"
+              id="maxPrice"
+              placeholder="السعر إلى"
+              min="0"
+            />
+            <button id="applyFiltersBtn">تطبيق الفلتر</button>
+            <button id="resetFiltersBtn" class="secondary">
+              إعادة تعيين
+            </button>
+          </div>
+        </section>
+
+        <div id="activeFilters" class="active-filters"></div>
+
+        <div id="productsGrid" class="products-grid">
+          <!-- المنتجات تُضاف هنا بالجافاسكربت -->
+        </div>
+      </main>
+    </div>
+
+    <footer class="store-footer">
+      &copy; <span id="year"></span> Meshari Tech Store – متجر إلكترونيات
+      واشتراكات
+    </footer>
+
+    <script>
+      const API_BASE = "";
+
+      const productsGrid = document.getElementById("productsGrid");
+      const productsTitle = document.getElementById("productsTitle");
+      const productsCount = document.getElementById("productsCount");
+      const sidebarButtons = document.querySelectorAll(".category-item");
+
+      const searchInput = document.getElementById("searchInput");
+      const minPriceInput = document.getElementById("minPrice");
+      const maxPriceInput = document.getElementById("maxPrice");
+      const applyFiltersBtn = document.getElementById("applyFiltersBtn");
+      const resetFiltersBtn = document.getElementById("resetFiltersBtn");
+      const activeFiltersBox = document.getElementById("activeFilters");
+
+      let allProducts = [];
+      let currentCategory = "all";
+      let searchQuery = "";
+      let minPrice = null;
+      let maxPrice = null;
+
+      function formatPrice(price) {
+        return price.toLocaleString("ar-SA", {
+          minimumFractionDigits: 0,
+        });
+      }
+
+      function buildActiveFiltersLabel() {
+        const parts = [];
+
+        if (currentCategory !== "all") {
+          parts.push("تصنيف: " + currentCategory);
+        }
+        if (searchQuery) {
+          parts.push(`بحث عن: "${searchQuery}"`);
+        }
+        if (minPrice !== null || maxPrice !== null) {
+          const from = minPrice !== null ? minPrice : "—";
+          const to = maxPrice !== null ? maxPrice : "—";
+          parts.push(`السعر بين: ${from} – ${to} ر.س`);
+        }
+
+        if (parts.length === 0) {
+          activeFiltersBox.textContent = "";
+          activeFiltersBox.style.display = "none";
+        } else {
+          activeFiltersBox.textContent = parts.join(" | ");
+          activeFiltersBox.style.display = "block";
+        }
+      }
+
+      function applyFilters() {
+        let list = [...allProducts];
+
+        // تصفية حسب التصنيف
+        if (currentCategory !== "all") {
+          list = list.filter((p) => p.category === currentCategory);
+        }
+
+        // تصفية حسب البحث
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          list = list.filter((p) => {
+            const name = (p.name || "").toLowerCase();
+            const desc = (p.description || "").toLowerCase();
+            const cat = (p.category || "").toLowerCase();
+            return (
+              name.includes(q) || desc.includes(q) || cat.includes(q)
+            );
+          });
+        }
+
+        // تصفية حسب السعر
+        if (minPrice !== null) {
+          list = list.filter((p) => Number(p.price) >= minPrice);
+        }
+        if (maxPrice !== null) {
+          list = list.filter((p) => Number(p.price) <= maxPrice);
+        }
+
+        const label =
+          currentCategory === "all" ? "جميع المنتجات" : currentCategory;
+        renderProducts(list, label);
+        buildActiveFiltersLabel();
+      }
+
+      function renderProducts(list, categoryLabel) {
+        productsGrid.innerHTML = "";
+
+        if (!list || list.length === 0) {
+          productsTitle.textContent = categoryLabel || "المنتجات";
+          productsCount.textContent = "";
+          productsGrid.innerHTML =
+            '<p class="empty-msg">لا توجد منتجات مطابقة للفلاتر الحالية.</p>';
+          return;
+        }
+
+        productsTitle.textContent =
+          categoryLabel || "المنتجات (" + list.length + ")";
+        productsCount.textContent = list.length + " منتج";
+
+        list.forEach((p) => {
+          const card = document.createElement("div");
+          card.className = "product-card";
+
+          card.innerHTML = `
+            <div class="product-image">
+              <div class="product-image-placeholder">
+                ${p.name
+                  .split(" ")
+                  .slice(0, 2)
+                  .join(" ")}
+              </div>
+            </div>
+            <div class="product-content">
+              <h3 class="product-name">${p.name}</h3>
+              <p class="product-category">${p.category || ""}</p>
+              <p class="product-desc">${p.description || ""}</p>
+              <div class="product-footer">
+                <span class="product-price">${formatPrice(
+                  p.price
+                )} ر.س</span>
+                <button class="product-btn">إضافة للسلة</button>
+              </div>
+            </div>
+          `;
+
+          productsGrid.appendChild(card);
+        });
+      }
+
+      async function loadProducts() {
+        try {
+          const res = await fetch(`${API_BASE}/api/products`);
+          const data = await res.json();
+          allProducts = data || [];
+          applyFilters(); // يعرض كل شيء مبدئياً
+        } catch (err) {
+          console.error(err);
+          productsGrid.innerHTML =
+            '<p class="empty-msg">تعذّر تحميل المنتجات. تأكد أن السيرفر يعمل.</p>';
+        }
+      }
+
+      // تغيير التصنيف من القائمة الجانبية
+      sidebarButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          sidebarButtons.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+
+          currentCategory = btn.getAttribute("data-category") || "all";
+          applyFilters();
+        });
+      });
+
+      // بحث بالكلمة
+      searchInput.addEventListener("input", () => {
+        searchQuery = searchInput.value.trim();
+      });
+
+      // تطبيق فلتر السعر + البحث (بالزر)
+      applyFiltersBtn.addEventListener("click", () => {
+        const minVal = minPriceInput.value;
+        const maxVal = maxPriceInput.value;
+
+        minPrice = minVal !== "" ? Number(minVal) : null;
+        maxPrice = maxVal !== "" ? Number(maxVal) : null;
+
+        applyFilters();
+      });
+
+      // إعادة تعيين كل الفلاتر
+      resetFiltersBtn.addEventListener("click", () => {
+        currentCategory = "all";
+        searchQuery = "";
+        minPrice = null;
+        maxPrice = null;
+
+        searchInput.value = "";
+        minPriceInput.value = "";
+        maxPriceInput.value = "";
+
+        sidebarButtons.forEach((b) => b.classList.remove("active"));
+        document
+          .querySelector('.category-item[data-category="all"]')
+          .classList.add("active");
+
+        applyFilters();
+      });
+
+      // تطبيق الفلتر بالإنتر في أي حقل
+      [searchInput, minPriceInput, maxPriceInput].forEach((el) => {
+        el.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            applyFiltersBtn.click();
+          }
+        });
+      });
+
+      document.getElementById("year").textContent =
+        new Date().getFullYear();
+
+      document.addEventListener("DOMContentLoaded", () => {
+        loadProducts();
+      });
+    </script>
+  </body>
 </html>

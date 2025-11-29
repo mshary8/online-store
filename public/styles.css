@@ -371,4 +371,321 @@ body {
 .product-price {
   margin-top: 0.3rem;
   font-weight: bold;
+}/* ====== Layout عام للمتجر ====== */
+.store-body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #0f172a, #020617 60%);
+  color: #e5e7eb;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.store-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 3rem;
+  border-bottom: 1px solid #1f2937;
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.store-logo {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.store-nav a {
+  margin-left: 1rem;
+  color: #cbd5f5;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.store-nav a:hover {
+  color: #60a5fa;
+}
+
+.store-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 1.5rem;
+  padding: 1.5rem 3rem 3rem;
+}
+
+/* ====== Sidebar ====== */
+.store-sidebar {
+  background: #020617;
+  border-radius: 1.5rem;
+  border: 1px solid #1f2937;
+  padding: 1.25rem;
+  max-height: calc(100vh - 120px);
+  position: sticky;
+  top: 80px;
+  overflow-y: auto;
+}
+
+.sidebar-title {
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.category-group {
+  margin-top: 1rem;
+}
+
+.category-group-title {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin-bottom: 0.4rem;
+}
+
+.category-item {
+  display: block;
+  width: 100%;
+  text-align: right;
+  padding: 0.4rem 0.6rem;
+  margin-bottom: 0.25rem;
+  border-radius: 0.8rem;
+  background: transparent;
+  border: none;
+  color: #e5e7eb;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, transform 0.05s;
+}
+
+.category-item:hover {
+  background: #020617;
+  color: #93c5fd;
+  transform: translateX(-2px);
+}
+
+.category-item.active {
+  background: #1d4ed8;
+  color: white;
+}
+
+/* ====== Main products area ====== */
+.store-main {
+  min-height: 400px;
+}
+
+.products-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1rem;
+}
+
+.products-header h2 {
+  font-size: 1.1rem;
+}
+
+.products-count {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+/* لو عندك .products-grid قديمة، هذا يحسنها */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1rem;
+}
+
+.product-card {
+  background: #020617;
+  border-radius: 1.25rem;
+  border: 1px solid #111827;
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.product-image {
+  margin-bottom: 0.5rem;
+}
+
+.product-image-placeholder {
+  border-radius: 1rem;
+  background: radial-gradient(circle at top, #1d4ed8, #020617);
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: #e5e7eb;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.product-name {
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+}
+
+.product-category {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-bottom: 0.4rem;
+}
+
+.product-desc {
+  font-size: 0.8rem;
+  color: #d1d5db;
+  margin-bottom: 0.6rem;
+  min-height: 2.4em;
+}
+
+.product-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.product-price {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.product-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.8rem;
+  background: #22c55e;
+  color: #022c22;
+  cursor: pointer;
+}
+
+.product-btn:hover {
+  background: #16a34a;
+}
+
+/* ====== Empty message ====== */
+.empty-msg {
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+/* ====== Footer ====== */
+.store-footer {
+  padding: 1rem 3rem;
+  border-top: 1px solid #1f2937;
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+/* ====== Responsive ====== */
+@media (max-width: 900px) {
+  .store-layout {
+    grid-template-columns: 1fr;
+    padding: 1rem 1.25rem 2rem;
+  }
+
+  .store-sidebar {
+    position: static;
+    max-height: none;
+    margin-bottom: 1rem;
+  }
+
+  .store-header {
+    padding: 0.8rem 1.25rem;
+  }
+}/* شريط الفلاتر فوق المنتجات */
+.filters-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 0.75rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filters-left h2 {
+  font-size: 1.1rem;
+}
+
+.filters-right {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.filters-right input {
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.75rem;
+  border: 1px solid #1f2937;
+  background: #020617;
+  color: #e5e7eb;
+  font-size: 0.8rem;
+  min-width: 120px;
+}
+
+.filters-right button {
+  border-radius: 999px;
+  border: none;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+#applyFiltersBtn {
+  background: #3b82f6;
+  color: white;
+}
+
+#applyFiltersBtn:hover {
+  background: #2563eb;
+}
+
+#resetFiltersBtn.secondary {
+  background: transparent;
+  border: 1px solid #4b5563;
+  color: #e5e7eb;
+}
+
+#resetFiltersBtn.secondary:hover {
+  background: #111827;
+}
+
+/* شريط الفلاتر المفعّلة */
+.active-filters {
+  margin-bottom: 0.75rem;
+  font-size: 0.8rem;
+  color: #e5e7eb;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(37, 99, 235, 0.4);
+  display: none;
+}
+
+/* تلوين مجموعات التصنيفات */
+.group-electronics {
+  color: #60a5fa;
+}
+
+.group-subscriptions {
+  color: #f97316;
+}
+
+/* ألوان خفيفة حسب group */
+.category-item[data-group="electronics"].active {
+  background: linear-gradient(90deg, #1d4ed8, #2563eb);
+}
+
+.category-item[data-group="subscriptions"].active {
+  background: linear-gradient(90deg, #f97316, #ea580c);
+}
+
+.category-item[data-group="all"].active {
+  background: #16a34a;
 }
