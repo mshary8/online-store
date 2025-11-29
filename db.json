@@ -1,4 +1,813 @@
 {
-  "users": [],
-  "products": []
+  "users": [
+    {
+      "id": 1,
+      "name": "Admin",
+      "email": "admin@example.com",
+      "password": "admin123",
+      "role": "admin"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Laptop Pro 1",
+      "price": 2509,
+      "category": "إلكترونيات - لابتوبات",
+      "image": "laptop1.jpg",
+      "description": "منتج Laptop Pro رقم 1 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 2,
+      "name": "Laptop Pro 2",
+      "price": 2519,
+      "category": "إلكترونيات - لابتوبات",
+      "image": "laptop2.jpg",
+      "description": "منتج Laptop Pro رقم 2 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 3,
+      "name": "Laptop Pro 3",
+      "price": 2529,
+      "category": "إلكترونيات - لابتوبات",
+      "image": "laptop3.jpg",
+      "description": "منتج Laptop Pro رقم 3 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 4,
+      "name": "Laptop Pro 4",
+      "price": 2539,
+      "category": "إلكترونيات - لابتوبات",
+      "image": "laptop4.jpg",
+      "description": "منتج Laptop Pro رقم 4 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 5,
+      "name": "Laptop Pro 5",
+      "price": 2549,
+      "category": "إلكترونيات - لابتوبات",
+      "image": "laptop5.jpg",
+      "description": "منتج Laptop Pro رقم 5 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 6,
+      "name": "Laptop Pro 6",
+      "price": 2559,
+      "category": "إلكترونيات - لابتوبات",
+      "image": "laptop6.jpg",
+      "description": "منتج Laptop Pro رقم 6 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 7,
+      "name": "Laptop Pro 7",
+      "price": 2569,
+      "category": "إلكترونيات - لابتوبات",
+      "image": "laptop7.jpg",
+      "description": "منتج Laptop Pro رقم 7 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 8,
+      "name": "Laptop Pro 8",
+      "price": 2579,
+      "category": "إلكترونيات - لابتوبات",
+      "image": "laptop8.jpg",
+      "description": "منتج Laptop Pro رقم 8 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 9,
+      "name": "Laptop Pro 9",
+      "price": 2589,
+      "category": "إلكترونيات - لابتوبات",
+      "image": "laptop9.jpg",
+      "description": "منتج Laptop Pro رقم 9 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 10,
+      "name": "Laptop Pro 10",
+      "price": 2599,
+      "category": "إلكترونيات - لابتوبات",
+      "image": "laptop10.jpg",
+      "description": "منتج Laptop Pro رقم 10 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 11,
+      "name": "Smartphone X 1",
+      "price": 1509,
+      "category": "إلكترونيات - جوالات",
+      "image": "phone1.jpg",
+      "description": "منتج Smartphone X رقم 1 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 12,
+      "name": "Smartphone X 2",
+      "price": 1519,
+      "category": "إلكترونيات - جوالات",
+      "image": "phone2.jpg",
+      "description": "منتج Smartphone X رقم 2 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 13,
+      "name": "Smartphone X 3",
+      "price": 1529,
+      "category": "إلكترونيات - جوالات",
+      "image": "phone3.jpg",
+      "description": "منتج Smartphone X رقم 3 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 14,
+      "name": "Smartphone X 4",
+      "price": 1539,
+      "category": "إلكترونيات - جوالات",
+      "image": "phone4.jpg",
+      "description": "منتج Smartphone X رقم 4 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 15,
+      "name": "Smartphone X 5",
+      "price": 1549,
+      "category": "إلكترونيات - جوالات",
+      "image": "phone5.jpg",
+      "description": "منتج Smartphone X رقم 5 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 16,
+      "name": "Smartphone X 6",
+      "price": 1559,
+      "category": "إلكترونيات - جوالات",
+      "image": "phone6.jpg",
+      "description": "منتج Smartphone X رقم 6 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 17,
+      "name": "Smartphone X 7",
+      "price": 1569,
+      "category": "إلكترونيات - جوالات",
+      "image": "phone7.jpg",
+      "description": "منتج Smartphone X رقم 7 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 18,
+      "name": "Smartphone X 8",
+      "price": 1579,
+      "category": "إلكترونيات - جوالات",
+      "image": "phone8.jpg",
+      "description": "منتج Smartphone X رقم 8 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 19,
+      "name": "Smartphone X 9",
+      "price": 1589,
+      "category": "إلكترونيات - جوالات",
+      "image": "phone9.jpg",
+      "description": "منتج Smartphone X رقم 9 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 20,
+      "name": "Smartphone X 10",
+      "price": 1599,
+      "category": "إلكترونيات - جوالات",
+      "image": "phone10.jpg",
+      "description": "منتج Smartphone X رقم 10 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 21,
+      "name": "Wireless Headphones 1",
+      "price": 309,
+      "category": "إلكترونيات - سماعات",
+      "image": "headphones1.jpg",
+      "description": "منتج Wireless Headphones رقم 1 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 22,
+      "name": "Wireless Headphones 2",
+      "price": 319,
+      "category": "إلكترونيات - سماعات",
+      "image": "headphones2.jpg",
+      "description": "منتج Wireless Headphones رقم 2 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 23,
+      "name": "Wireless Headphones 3",
+      "price": 329,
+      "category": "إلكترونيات - سماعات",
+      "image": "headphones3.jpg",
+      "description": "منتج Wireless Headphones رقم 3 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 24,
+      "name": "Wireless Headphones 4",
+      "price": 339,
+      "category": "إلكترونيات - سماعات",
+      "image": "headphones4.jpg",
+      "description": "منتج Wireless Headphones رقم 4 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 25,
+      "name": "Wireless Headphones 5",
+      "price": 349,
+      "category": "إلكترونيات - سماعات",
+      "image": "headphones5.jpg",
+      "description": "منتج Wireless Headphones رقم 5 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 26,
+      "name": "Wireless Headphones 6",
+      "price": 359,
+      "category": "إلكترونيات - سماعات",
+      "image": "headphones6.jpg",
+      "description": "منتج Wireless Headphones رقم 6 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 27,
+      "name": "Wireless Headphones 7",
+      "price": 369,
+      "category": "إلكترونيات - سماعات",
+      "image": "headphones7.jpg",
+      "description": "منتج Wireless Headphones رقم 7 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 28,
+      "name": "Wireless Headphones 8",
+      "price": 379,
+      "category": "إلكترونيات - سماعات",
+      "image": "headphones8.jpg",
+      "description": "منتج Wireless Headphones رقم 8 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 29,
+      "name": "Wireless Headphones 9",
+      "price": 389,
+      "category": "إلكترونيات - سماعات",
+      "image": "headphones9.jpg",
+      "description": "منتج Wireless Headphones رقم 9 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 30,
+      "name": "Wireless Headphones 10",
+      "price": 399,
+      "category": "إلكترونيات - سماعات",
+      "image": "headphones10.jpg",
+      "description": "منتج Wireless Headphones رقم 10 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 31,
+      "name": "Gaming Console 1",
+      "price": 1909,
+      "category": "إلكترونيات - أجهزة ترفيه (Sony / Xbox)",
+      "image": "console1.jpg",
+      "description": "منتج Gaming Console رقم 1 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 32,
+      "name": "Gaming Console 2",
+      "price": 1919,
+      "category": "إلكترونيات - أجهزة ترفيه (Sony / Xbox)",
+      "image": "console2.jpg",
+      "description": "منتج Gaming Console رقم 2 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 33,
+      "name": "Gaming Console 3",
+      "price": 1929,
+      "category": "إلكترونيات - أجهزة ترفيه (Sony / Xbox)",
+      "image": "console3.jpg",
+      "description": "منتج Gaming Console رقم 3 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 34,
+      "name": "Gaming Console 4",
+      "price": 1939,
+      "category": "إلكترونيات - أجهزة ترفيه (Sony / Xbox)",
+      "image": "console4.jpg",
+      "description": "منتج Gaming Console رقم 4 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 35,
+      "name": "Gaming Console 5",
+      "price": 1949,
+      "category": "إلكترونيات - أجهزة ترفيه (Sony / Xbox)",
+      "image": "console5.jpg",
+      "description": "منتج Gaming Console رقم 5 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 36,
+      "name": "Gaming Console 6",
+      "price": 1959,
+      "category": "إلكترونيات - أجهزة ترفيه (Sony / Xbox)",
+      "image": "console6.jpg",
+      "description": "منتج Gaming Console رقم 6 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 37,
+      "name": "Gaming Console 7",
+      "price": 1969,
+      "category": "إلكترونيات - أجهزة ترفيه (Sony / Xbox)",
+      "image": "console7.jpg",
+      "description": "منتج Gaming Console رقم 7 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 38,
+      "name": "Gaming Console 8",
+      "price": 1979,
+      "category": "إلكترونيات - أجهزة ترفيه (Sony / Xbox)",
+      "image": "console8.jpg",
+      "description": "منتج Gaming Console رقم 8 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 39,
+      "name": "Gaming Console 9",
+      "price": 1989,
+      "category": "إلكترونيات - أجهزة ترفيه (Sony / Xbox)",
+      "image": "console9.jpg",
+      "description": "منتج Gaming Console رقم 9 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 40,
+      "name": "Gaming Console 10",
+      "price": 1999,
+      "category": "إلكترونيات - أجهزة ترفيه (Sony / Xbox)",
+      "image": "console10.jpg",
+      "description": "منتج Gaming Console رقم 10 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 41,
+      "name": "Streaming Subscription 1",
+      "price": 39,
+      "category": "اشتراكات - تطبيقات مشاهدة",
+      "image": "subscription1.jpg",
+      "description": "منتج Streaming Subscription رقم 1 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 42,
+      "name": "Streaming Subscription 2",
+      "price": 49,
+      "category": "اشتراكات - تطبيقات مشاهدة",
+      "image": "subscription2.jpg",
+      "description": "منتج Streaming Subscription رقم 2 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 43,
+      "name": "Streaming Subscription 3",
+      "price": 59,
+      "category": "اشتراكات - تطبيقات مشاهدة",
+      "image": "subscription3.jpg",
+      "description": "منتج Streaming Subscription رقم 3 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 44,
+      "name": "Streaming Subscription 4",
+      "price": 69,
+      "category": "اشتراكات - تطبيقات مشاهدة",
+      "image": "subscription4.jpg",
+      "description": "منتج Streaming Subscription رقم 4 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 45,
+      "name": "Streaming Subscription 5",
+      "price": 79,
+      "category": "اشتراكات - تطبيقات مشاهدة",
+      "image": "subscription5.jpg",
+      "description": "منتج Streaming Subscription رقم 5 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 46,
+      "name": "Streaming Subscription 6",
+      "price": 89,
+      "category": "اشتراكات - تطبيقات مشاهدة",
+      "image": "subscription6.jpg",
+      "description": "منتج Streaming Subscription رقم 6 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 47,
+      "name": "Streaming Subscription 7",
+      "price": 99,
+      "category": "اشتراكات - تطبيقات مشاهدة",
+      "image": "subscription7.jpg",
+      "description": "منتج Streaming Subscription رقم 7 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 48,
+      "name": "Streaming Subscription 8",
+      "price": 109,
+      "category": "اشتراكات - تطبيقات مشاهدة",
+      "image": "subscription8.jpg",
+      "description": "منتج Streaming Subscription رقم 8 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 49,
+      "name": "Streaming Subscription 9",
+      "price": 119,
+      "category": "اشتراكات - تطبيقات مشاهدة",
+      "image": "subscription9.jpg",
+      "description": "منتج Streaming Subscription رقم 9 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 50,
+      "name": "Streaming Subscription 10",
+      "price": 129,
+      "category": "اشتراكات - تطبيقات مشاهدة",
+      "image": "subscription10.jpg",
+      "description": "منتج Streaming Subscription رقم 10 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 51,
+      "name": "4K Monitor 1",
+      "price": 809,
+      "category": "إلكترونيات - شاشات عرض",
+      "image": "monitor1.jpg",
+      "description": "منتج 4K Monitor رقم 1 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 52,
+      "name": "4K Monitor 2",
+      "price": 819,
+      "category": "إلكترونيات - شاشات عرض",
+      "image": "monitor2.jpg",
+      "description": "منتج 4K Monitor رقم 2 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 53,
+      "name": "4K Monitor 3",
+      "price": 829,
+      "category": "إلكترونيات - شاشات عرض",
+      "image": "monitor3.jpg",
+      "description": "منتج 4K Monitor رقم 3 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 54,
+      "name": "4K Monitor 4",
+      "price": 839,
+      "category": "إلكترونيات - شاشات عرض",
+      "image": "monitor4.jpg",
+      "description": "منتج 4K Monitor رقم 4 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 55,
+      "name": "4K Monitor 5",
+      "price": 849,
+      "category": "إلكترونيات - شاشات عرض",
+      "image": "monitor5.jpg",
+      "description": "منتج 4K Monitor رقم 5 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 56,
+      "name": "4K Monitor 6",
+      "price": 859,
+      "category": "إلكترونيات - شاشات عرض",
+      "image": "monitor6.jpg",
+      "description": "منتج 4K Monitor رقم 6 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 57,
+      "name": "4K Monitor 7",
+      "price": 869,
+      "category": "إلكترونيات - شاشات عرض",
+      "image": "monitor7.jpg",
+      "description": "منتج 4K Monitor رقم 7 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 58,
+      "name": "4K Monitor 8",
+      "price": 879,
+      "category": "إلكترونيات - شاشات عرض",
+      "image": "monitor8.jpg",
+      "description": "منتج 4K Monitor رقم 8 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 59,
+      "name": "4K Monitor 9",
+      "price": 889,
+      "category": "إلكترونيات - شاشات عرض",
+      "image": "monitor9.jpg",
+      "description": "منتج 4K Monitor رقم 9 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 60,
+      "name": "4K Monitor 10",
+      "price": 899,
+      "category": "إلكترونيات - شاشات عرض",
+      "image": "monitor10.jpg",
+      "description": "منتج 4K Monitor رقم 10 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 61,
+      "name": "Smart Watch 1",
+      "price": 409,
+      "category": "إلكترونيات - ساعات ذكية",
+      "image": "watch1.jpg",
+      "description": "منتج Smart Watch رقم 1 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 62,
+      "name": "Smart Watch 2",
+      "price": 419,
+      "category": "إلكترونيات - ساعات ذكية",
+      "image": "watch2.jpg",
+      "description": "منتج Smart Watch رقم 2 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 63,
+      "name": "Smart Watch 3",
+      "price": 429,
+      "category": "إلكترونيات - ساعات ذكية",
+      "image": "watch3.jpg",
+      "description": "منتج Smart Watch رقم 3 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 64,
+      "name": "Smart Watch 4",
+      "price": 439,
+      "category": "إلكترونيات - ساعات ذكية",
+      "image": "watch4.jpg",
+      "description": "منتج Smart Watch رقم 4 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 65,
+      "name": "Smart Watch 5",
+      "price": 449,
+      "category": "إلكترونيات - ساعات ذكية",
+      "image": "watch5.jpg",
+      "description": "منتج Smart Watch رقم 5 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 66,
+      "name": "Smart Watch 6",
+      "price": 459,
+      "category": "إلكترونيات - ساعات ذكية",
+      "image": "watch6.jpg",
+      "description": "منتج Smart Watch رقم 6 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 67,
+      "name": "Smart Watch 7",
+      "price": 469,
+      "category": "إلكترونيات - ساعات ذكية",
+      "image": "watch7.jpg",
+      "description": "منتج Smart Watch رقم 7 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 68,
+      "name": "Smart Watch 8",
+      "price": 479,
+      "category": "إلكترونيات - ساعات ذكية",
+      "image": "watch8.jpg",
+      "description": "منتج Smart Watch رقم 8 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 69,
+      "name": "Smart Watch 9",
+      "price": 489,
+      "category": "إلكترونيات - ساعات ذكية",
+      "image": "watch9.jpg",
+      "description": "منتج Smart Watch رقم 9 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 70,
+      "name": "Smart Watch 10",
+      "price": 499,
+      "category": "إلكترونيات - ساعات ذكية",
+      "image": "watch10.jpg",
+      "description": "منتج Smart Watch رقم 10 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 71,
+      "name": "Gaming Keyboard & Mouse 1",
+      "price": 159,
+      "category": "إلكترونيات - لوحات مفاتيح وفأرات",
+      "image": "peripheral1.jpg",
+      "description": "منتج Gaming Keyboard & Mouse رقم 1 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 72,
+      "name": "Gaming Keyboard & Mouse 2",
+      "price": 169,
+      "category": "إلكترونيات - لوحات مفاتيح وفأرات",
+      "image": "peripheral2.jpg",
+      "description": "منتج Gaming Keyboard & Mouse رقم 2 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 73,
+      "name": "Gaming Keyboard & Mouse 3",
+      "price": 179,
+      "category": "إلكترونيات - لوحات مفاتيح وفأرات",
+      "image": "peripheral3.jpg",
+      "description": "منتج Gaming Keyboard & Mouse رقم 3 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 74,
+      "name": "Gaming Keyboard & Mouse 4",
+      "price": 189,
+      "category": "إلكترونيات - لوحات مفاتيح وفأرات",
+      "image": "peripheral4.jpg",
+      "description": "منتج Gaming Keyboard & Mouse رقم 4 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 75,
+      "name": "Gaming Keyboard & Mouse 5",
+      "price": 199,
+      "category": "إلكترونيات - لوحات مفاتيح وفأرات",
+      "image": "peripheral5.jpg",
+      "description": "منتج Gaming Keyboard & Mouse رقم 5 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 76,
+      "name": "Gaming Keyboard & Mouse 6",
+      "price": 209,
+      "category": "إلكترونيات - لوحات مفاتيح وفأرات",
+      "image": "peripheral6.jpg",
+      "description": "منتج Gaming Keyboard & Mouse رقم 6 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 77,
+      "name": "Gaming Keyboard & Mouse 7",
+      "price": 219,
+      "category": "إلكترونيات - لوحات مفاتيح وفأرات",
+      "image": "peripheral7.jpg",
+      "description": "منتج Gaming Keyboard & Mouse رقم 7 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 78,
+      "name": "Gaming Keyboard & Mouse 8",
+      "price": 229,
+      "category": "إلكترونيات - لوحات مفاتيح وفأرات",
+      "image": "peripheral8.jpg",
+      "description": "منتج Gaming Keyboard & Mouse رقم 8 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 79,
+      "name": "Gaming Keyboard & Mouse 9",
+      "price": 239,
+      "category": "إلكترونيات - لوحات مفاتيح وفأرات",
+      "image": "peripheral9.jpg",
+      "description": "منتج Gaming Keyboard & Mouse رقم 9 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 80,
+      "name": "Gaming Keyboard & Mouse 10",
+      "price": 249,
+      "category": "إلكترونيات - لوحات مفاتيح وفأرات",
+      "image": "peripheral10.jpg",
+      "description": "منتج Gaming Keyboard & Mouse رقم 10 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 81,
+      "name": "WiFi Router 1",
+      "price": 209,
+      "category": "إلكترونيات - أجهزة شبكة (راوتر/واي فاي)",
+      "image": "router1.jpg",
+      "description": "منتج WiFi Router رقم 1 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 82,
+      "name": "WiFi Router 2",
+      "price": 219,
+      "category": "إلكترونيات - أجهزة شبكة (راوتر/واي فاي)",
+      "image": "router2.jpg",
+      "description": "منتج WiFi Router رقم 2 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 83,
+      "name": "WiFi Router 3",
+      "price": 229,
+      "category": "إلكترونيات - أجهزة شبكة (راوتر/واي فاي)",
+      "image": "router3.jpg",
+      "description": "منتج WiFi Router رقم 3 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 84,
+      "name": "WiFi Router 4",
+      "price": 239,
+      "category": "إلكترونيات - أجهزة شبكة (راوتر/واي فاي)",
+      "image": "router4.jpg",
+      "description": "منتج WiFi Router رقم 4 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 85,
+      "name": "WiFi Router 5",
+      "price": 249,
+      "category": "إلكترونيات - أجهزة شبكة (راوتر/واي فاي)",
+      "image": "router5.jpg",
+      "description": "منتج WiFi Router رقم 5 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 86,
+      "name": "WiFi Router 6",
+      "price": 259,
+      "category": "إلكترونيات - أجهزة شبكة (راوتر/واي فاي)",
+      "image": "router6.jpg",
+      "description": "منتج WiFi Router رقم 6 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 87,
+      "name": "WiFi Router 7",
+      "price": 269,
+      "category": "إلكترونيات - أجهزة شبكة (راوتر/واي فاي)",
+      "image": "router7.jpg",
+      "description": "منتج WiFi Router رقم 7 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 88,
+      "name": "WiFi Router 8",
+      "price": 279,
+      "category": "إلكترونيات - أجهزة شبكة (راوتر/واي فاي)",
+      "image": "router8.jpg",
+      "description": "منتج WiFi Router رقم 8 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 89,
+      "name": "WiFi Router 9",
+      "price": 289,
+      "category": "إلكترونيات - أجهزة شبكة (راوتر/واي فاي)",
+      "image": "router9.jpg",
+      "description": "منتج WiFi Router رقم 9 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 90,
+      "name": "WiFi Router 10",
+      "price": 299,
+      "category": "إلكترونيات - أجهزة شبكة (راوتر/واي فاي)",
+      "image": "router10.jpg",
+      "description": "منتج WiFi Router رقم 10 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 91,
+      "name": "Tech Accessory 1",
+      "price": 49,
+      "category": "إلكترونيات - إكسسوارات (كابلات وحافظات)",
+      "image": "accessory1.jpg",
+      "description": "منتج Tech Accessory رقم 1 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 92,
+      "name": "Tech Accessory 2",
+      "price": 59,
+      "category": "إلكترونيات - إكسسوارات (كابلات وحافظات)",
+      "image": "accessory2.jpg",
+      "description": "منتج Tech Accessory رقم 2 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 93,
+      "name": "Tech Accessory 3",
+      "price": 69,
+      "category": "إلكترونيات - إكسسوارات (كابلات وحافظات)",
+      "image": "accessory3.jpg",
+      "description": "منتج Tech Accessory رقم 3 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 94,
+      "name": "Tech Accessory 4",
+      "price": 79,
+      "category": "إلكترونيات - إكسسوارات (كابلات وحافظات)",
+      "image": "accessory4.jpg",
+      "description": "منتج Tech Accessory رقم 4 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 95,
+      "name": "Tech Accessory 5",
+      "price": 89,
+      "category": "إلكترونيات - إكسسوارات (كابلات وحافظات)",
+      "image": "accessory5.jpg",
+      "description": "منتج Tech Accessory رقم 5 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 96,
+      "name": "Tech Accessory 6",
+      "price": 99,
+      "category": "إلكترونيات - إكسسوارات (كابلات وحافظات)",
+      "image": "accessory6.jpg",
+      "description": "منتج Tech Accessory رقم 6 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 97,
+      "name": "Tech Accessory 7",
+      "price": 109,
+      "category": "إلكترونيات - إكسسوارات (كابلات وحافظات)",
+      "image": "accessory7.jpg",
+      "description": "منتج Tech Accessory رقم 7 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 98,
+      "name": "Tech Accessory 8",
+      "price": 119,
+      "category": "إلكترونيات - إكسسوارات (كابلات وحافظات)",
+      "image": "accessory8.jpg",
+      "description": "منتج Tech Accessory رقم 8 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 99,
+      "name": "Tech Accessory 9",
+      "price": 129,
+      "category": "إلكترونيات - إكسسوارات (كابلات وحافظات)",
+      "image": "accessory9.jpg",
+      "description": "منتج Tech Accessory رقم 9 بجودة عالية مناسب للاستخدام اليومي."
+    },
+    {
+      "id": 100,
+      "name": "Tech Accessory 10",
+      "price": 139,
+      "category": "إلكترونيات - إكسسوارات (كابلات وحافظات)",
+      "image": "accessory10.jpg",
+      "description": "منتج Tech Accessory رقم 10 بجودة عالية مناسب للاستخدام اليومي."
+    }
+  ]
 }
