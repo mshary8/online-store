@@ -1,37 +1,195 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <title>سلة المشتريات | Cart</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <header class="navbar">
-    <div class="container nav-content">
-      <div class="logo">متجر بسيط</div>
-      <nav>
-        <a href="index.html">الرئيسية</a>
-        <a href="cart.html">السلة (<span id="cart-count">0</span>)</a>
-        <a href="admin.html">لوحة الإدارة</a>
-      </nav>
-    </div>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <title>سلة المشتريات - Meshari Tech Store</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="store-body">
+    <!-- الهيدر -->
+    <header class="top-nav">
+      <div class="nav-left">
+        <a href="index.html" class="nav-link">الرئيسية</a>
+        <a href="login.html" class="nav-link">تسجيل الدخول</a>
+        <a href="register.html" class="nav-link">تسجيل جديد</a>
+        <a href="cart.html" class="nav-link cart-link active">
+          🛒 السلة (<span id="cart-count">0</span>)
+        </a>
+      </div>
+      <div class="nav-right">
+        <span class="store-logo">Meshari Tech Store</span>
+      </div>
+    </header>
 
-  <main class="container">
-    <h1 class="section-title">سلة المشتريات</h1>
-    <div id="cart-items"></div>
-    <div id="cart-summary"></div>
-    <button id="checkout-btn" class="btn-primary">إتمام الطلب (وهمي)</button>
-  </main>
+    <main class="page-container">
+      <h1 class="page-title">سلة المشتريات</h1>
 
-  <footer class="footer">
-    <div class="container">
-      <p>متجر تجريبي للتعلم &copy; 2025</p>
-    </div>
-  </footer>
+      <section class="cart-wrapper">
+        <div id="cartContent"></div>
+      </section>
+    </main>
 
-  <script src="main.js"></script>
-</body>
+    <script>
+      // نفس دوال السلة المستخدمة في main.js لكن مبسطة هنا
+
+      function getCart() {
+        const raw = localStorage.getItem("cart");
+        return raw ? JSON.parse(raw) : [];
+      }
+
+      function saveCart(cart) {
+        localStorage.setItem("cart", JSON.stringify(cart));
+      }
+
+      function updateCartBadge() {
+        const badge = document.getElementById("cart-count");
+        if (!badge) return;
+        const cart = getCart();
+        const count = cart.reduce((sum, item) => sum + item.qty, 0);
+        badge.textContent = count;
+      }
+
+      function formatPrice(p) {
+        return p.toLocaleString("ar-SA", { minimumFractionDigits: 2 });
+      }
+
+      function renderCart() {
+        const container = document.getElementById("cartContent");
+        const cart = getCart();
+
+        if (cart.length === 0) {
+          container.innerHTML = `
+            <div class="cart-empty">
+              <p>سلتك فارغة حاليًا 🛒</p>
+              <a href="index.html" class="btn-primary">العودة للتسوق</a>
+            </div>
+          `;
+          updateCartBadge();
+          return;
+        }
+
+        let total = 0;
+        cart.forEach((item) => {
+          total += item.price * item.qty;
+        });
+
+        let rows = cart
+          .map(
+            (item) => `
+          <tr>
+            <td>
+              <div class="cart-item-main">
+                <div class="cart-thumb">
+                  <span>${item.name.charAt(0)}</span>
+                </div>
+                <div>
+                  <div class="cart-item-name">${item.name}</div>
+                  <div class="cart-item-meta">
+                    ${item.category || ""} – ر.س ${formatPrice(item.price)}
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="cart-qty-cell">
+              <button class="qty-btn" data-id="${item.id}" data-action="dec">−</button>
+              <span class="qty-value">${item.qty}</span>
+              <button class="qty-btn" data-id="${item.id}" data-action="inc">+</button>
+            </td>
+            <td class="cart-price-cell">
+              ر.س ${formatPrice(item.price * item.qty)}
+            </td>
+            <td class="cart-remove-cell">
+              <button class="remove-btn" data-id="${item.id}">حذف</button>
+            </td>
+          </tr>
+        `
+          )
+          .join("");
+
+        container.innerHTML = `
+          <div class="cart-card">
+            <table class="cart-table">
+              <thead>
+                <tr>
+                  <th>المنتج</th>
+                  <th>الكمية</th>
+                  <th>الإجمالي</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows}
+              </tbody>
+            </table>
+
+            <div class="cart-footer">
+              <div class="cart-total">
+                المجموع الكلي: <span>ر.س ${formatPrice(total)}</span>
+              </div>
+              <div class="cart-actions">
+                <button id="clearCartBtn" class="btn-secondary">مسح السلة</button>
+                <button id="checkoutBtn" class="btn-primary">إتمام الطلب</button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // أزرار الكمية
+        document.querySelectorAll(".qty-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const id = Number(btn.getAttribute("data-id"));
+            const action = btn.getAttribute("data-action");
+            const cart = getCart();
+            const item = cart.find((i) => i.id === id);
+            if (!item) return;
+
+            if (action === "inc") item.qty += 1;
+            if (action === "dec") item.qty -= 1;
+            if (item.qty <= 0) {
+              const idx = cart.findIndex((i) => i.id === id);
+              cart.splice(idx, 1);
+            }
+
+            saveCart(cart);
+            renderCart();
+            updateCartBadge();
+          });
+        });
+
+        // أزرار الحذف
+        document.querySelectorAll(".remove-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const id = Number(btn.getAttribute("data-id"));
+            let cart = getCart();
+            cart = cart.filter((i) => i.id !== id);
+            saveCart(cart);
+            renderCart();
+            updateCartBadge();
+          });
+        });
+
+        // زر مسح السلة
+        document
+          .getElementById("clearCartBtn")
+          .addEventListener("click", () => {
+            if (!confirm("هل أنت متأكد من مسح السلة بالكامل؟")) return;
+            localStorage.removeItem("cart");
+            renderCart();
+            updateCartBadge();
+          });
+
+        // زر إتمام الطلب (عرض رسالة بسيطة)
+        document
+          .getElementById("checkoutBtn")
+          .addEventListener("click", () => {
+            alert("تم تسجيل طلبك بشكل تجريبي ✅ يمكنك تطوير صفحة الدفع لاحقًا.");
+          });
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        updateCartBadge();
+        renderCart();
+      });
+    </script>
+  </body>
 </html>

@@ -1,229 +1,264 @@
+// public/main.js
 
-// ===== Helpers for cart in localStorage =====
-const CART_KEY = "simpleStoreCart";
+// =========================
+//  إعداد السلة (LocalStorage)
+// =========================
 
 function getCart() {
-  const raw = localStorage.getItem(CART_KEY);
+  const raw = localStorage.getItem("cart");
   return raw ? JSON.parse(raw) : [];
 }
 
 function saveCart(cart) {
-  localStorage.setItem(CART_KEY, JSON.stringify(cart));
-  updateCartCount();
+  localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-function updateCartCount() {
+function updateCartBadge() {
+  const badge = document.getElementById("cart-count");
+  if (!badge) return;
   const cart = getCart();
-  const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const el = document.getElementById("cart-count");
-  if (el) el.textContent = count;
+  const count = cart.reduce((sum, item) => sum + item.qty, 0);
+  badge.textContent = count;
 }
 
 function addToCart(product) {
   const cart = getCart();
   const existing = cart.find((item) => item.id === product.id);
   if (existing) {
-    existing.quantity += 1;
+    existing.qty += 1;
   } else {
-    cart.push({ ...product, quantity: 1 });
+    cart.push({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      category: product.category,
+      qty: 1,
+    });
   }
   saveCart(cart);
-  alert("تم إضافة المنتج إلى السلة");
+  updateCartBadge();
 }
 
-function removeFromCart(id) {
-  let cart = getCart();
-  cart = cart.filter((item) => item.id !== id);
-  saveCart(cart);
-  renderCart();
-}
+// =========================
+//  تحميل المنتجات من السيرفر
+// =========================
 
-function changeQuantity(id, delta) {
-  const cart = getCart();
-  const item = cart.find((i) => i.id === id);
-  if (!item) return;
-  item.quantity += delta;
-  if (item.quantity <= 0) {
-    const filtered = cart.filter((i) => i.id !== id);
-    saveCart(filtered);
-  } else {
-    saveCart(cart);
-  }
-  renderCart();
-}
+let allProducts = [];
+let filteredProducts = [];
+let currentCategory = "all";
 
-// ===== Fetch products & render on index =====
 async function loadProducts() {
-  const listEl = document.getElementById("product-list");
-  if (!listEl) return;
-
   try {
     const res = await fetch("/api/products");
-    const products = await res.json();
+    if (!res.ok) throw new Error("خطأ في تحميل المنتجات");
+    const data = await res.json();
+    allProducts = data;
+    filteredProducts = [...allProducts];
 
-    listEl.innerHTML = "";
-    products.forEach((p) => {
-      const card = document.createElement("div");
-      card.className = "product-card";
-
-      const img = document.createElement("img");
-      img.src = p.image || "https://via.placeholder.com/400x300?text=No+Image";
-      img.alt = p.name;
-
-      const title = document.createElement("h3");
-      title.textContent = p.name;
-
-      const desc = document.createElement("p");
-      desc.textContent = p.description;
-
-      const price = document.createElement("div");
-      price.className = "price";
-      price.textContent = p.price.toFixed(2) + " ر.س";
-
-      const btn = document.createElement("button");
-      btn.className = "btn-primary";
-      btn.textContent = "إضافة إلى السلة";
-      btn.addEventListener("click", () => addToCart({
-        id: p.id,
-        name: p.name,
-        price: p.price
-      }));
-
-      card.appendChild(img);
-      card.appendChild(title);
-      card.appendChild(desc);
-      card.appendChild(price);
-      card.appendChild(btn);
-
-      listEl.appendChild(card);
-    });
+    renderProducts();
+    updateProductsCount();
+    updateCartBadge();
   } catch (err) {
-    console.error("Error loading products", err);
-    listEl.innerHTML = "<p>حدث خطأ في تحميل المنتجات.</p>";
+    console.error(err);
+    const grid = document.getElementById("productsGrid");
+    if (grid) {
+      grid.innerHTML =
+        '<p class="error-text">تعذّر تحميل المنتجات من السيرفر.</p>';
+    }
   }
 }
 
-// ===== Render cart page =====
-function renderCart() {
-  const itemsEl = document.getElementById("cart-items");
-  const summaryEl = document.getElementById("cart-summary");
-  if (!itemsEl || !summaryEl) return;
+// =========================
+//  عرض المنتجات في الصفحة
+// =========================
 
-  const cart = getCart();
-  if (cart.length === 0) {
-    itemsEl.innerHTML = "<p>السلة فارغة.</p>";
-    summaryEl.innerHTML = "";
+function formatPrice(p) {
+  return p.toLocaleString("ar-SA", { minimumFractionDigits: 2 });
+}
+
+function renderProducts() {
+  const grid = document.getElementById("productsGrid");
+  if (!grid) return;
+
+  grid.innerHTML = "";
+
+  if (filteredProducts.length === 0) {
+    grid.innerHTML =
+      '<p class="empty-text">لا يوجد منتجات مطابقة للبحث أو الفلتر.</p>';
     return;
   }
 
-  itemsEl.innerHTML = "";
-  let total = 0;
+  filteredProducts.forEach((p) => {
+    const card = document.createElement("div");
+    card.className = "product-card";
 
-  cart.forEach((item) => {
-    const lineTotal = item.price * item.quantity;
-    total += lineTotal;
+    card.innerHTML = `
+      <div class="product-thumb">
+        <span class="product-thumb-title">${p.name}</span>
+      </div>
+      <div class="product-body">
+        <h3 class="product-title">${p.name}</h3>
+        <p class="product-meta">${p.category || "بدون فئة"}</p>
+        <p class="product-desc">
+          ${
+            p.description ||
+            "منتج عالي الجودة مناسب للاستخدام اليومي والاحترافي."
+          }
+        </p>
+        <div class="product-footer">
+          <span class="product-price">ر.س ${formatPrice(p.price)}</span>
+          <button class="btn-add-cart" data-id="${p.id}">
+            إضافة للسلة
+          </button>
+        </div>
+      </div>
+    `;
 
-    const row = document.createElement("div");
-    row.className = "cart-item";
-
-    const name = document.createElement("div");
-    name.className = "cart-item-name";
-    name.textContent = item.name;
-
-    const qty = document.createElement("div");
-    qty.className = "cart-item-qty";
-
-    const minusBtn = document.createElement("button");
-    minusBtn.className = "qty-btn";
-    minusBtn.textContent = "-";
-    minusBtn.onclick = () => changeQuantity(item.id, -1);
-
-    const qtySpan = document.createElement("span");
-    qtySpan.textContent = item.quantity;
-
-    const plusBtn = document.createElement("button");
-    plusBtn.className = "qty-btn";
-    plusBtn.textContent = "+";
-    plusBtn.onclick = () => changeQuantity(item.id, 1);
-
-    qty.appendChild(minusBtn);
-    qty.appendChild(qtySpan);
-    qty.appendChild(plusBtn);
-
-    const price = document.createElement("div");
-    price.className = "cart-item-price";
-    price.textContent = lineTotal.toFixed(2) + " ر.س";
-
-    const removeBtn = document.createElement("button");
-    removeBtn.className = "remove-btn";
-    removeBtn.textContent = "حذف";
-    removeBtn.onclick = () => removeFromCart(item.id);
-
-    row.appendChild(name);
-    row.appendChild(qty);
-    row.appendChild(price);
-    row.appendChild(removeBtn);
-
-    itemsEl.appendChild(row);
+    grid.appendChild(card);
   });
 
-  summaryEl.textContent = "الإجمالي: " + total.toFixed(2) + " ر.س";
+  // ربط أزرار "إضافة للسلة"
+  document.querySelectorAll(".btn-add-cart").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = Number(btn.getAttribute("data-id"));
+      const product = allProducts.find((p) => p.id === id);
+      if (product) {
+        addToCart(product);
+        btn.textContent = "أُضيفت ✅";
+        setTimeout(() => {
+          btn.textContent = "إضافة للسلة";
+        }, 1000);
+      }
+    });
+  });
 }
 
-// ===== Admin form =====
-function initAdminForm() {
-  const form = document.getElementById("admin-form");
-  const msg = document.getElementById("admin-message");
-  if (!form) return;
+function updateProductsCount() {
+  const el = document.getElementById("productsCount");
+  if (el) el.textContent = filteredProducts.length;
+}
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    msg.textContent = "";
+// =========================
+//  الفلاتر والبحث
+// =========================
 
-    const product = {
-      name: document.getElementById("name").value,
-      description: document.getElementById("description").value,
-      price: parseFloat(document.getElementById("price").value),
-      image: document.getElementById("image").value,
-      category: document.getElementById("category").value,
-      stock: parseInt(document.getElementById("stock").value || "0", 10)
-    };
+function applyFilters() {
+  let list = [...allProducts];
 
-    try {
-      const res = await fetch("/api/admin/products", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(product)
-      });
+  // فلتر التصنيف
+  if (currentCategory !== "all") {
+    list = list.filter((p) => p.categoryKey === currentCategory);
+  }
 
-      if (!res.ok) {
-        msg.textContent = "حدث خطأ أثناء الحفظ.";
-        return;
-      }
+  // البحث بالاسم أو الوصف
+  const searchInput = document.getElementById("searchInput");
+  if (searchInput && searchInput.value.trim() !== "") {
+    const q = searchInput.value.trim().toLowerCase();
+    list = list.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        (p.description && p.description.toLowerCase().includes(q))
+    );
+  }
 
-      const data = await res.json();
-      msg.textContent = "تم حفظ المنتج بنجاح (ID: " + data.id + ")";
-      form.reset();
-    } catch (err) {
-      console.error("Error saving product", err);
-      msg.textContent = "حدث خطأ أثناء الحفظ.";
+  // فلتر السعر
+  const minEl = document.getElementById("priceMin");
+  const maxEl = document.getElementById("priceMax");
+  const min = minEl && minEl.value ? Number(minEl.value) : null;
+  const max = maxEl && maxEl.value ? Number(maxEl.value) : null;
+
+  if (min !== null) {
+    list = list.filter((p) => p.price >= min);
+  }
+  if (max !== null) {
+    list = list.filter((p) => p.price <= max);
+  }
+
+  filteredProducts = list;
+  renderProducts();
+  updateProductsCount();
+}
+
+function resetFilters() {
+  const searchInput = document.getElementById("searchInput");
+  const minEl = document.getElementById("priceMin");
+  const maxEl = document.getElementById("priceMax");
+
+  if (searchInput) searchInput.value = "";
+  if (minEl) minEl.value = "";
+  if (maxEl) maxEl.value = "";
+
+  currentCategory = "all";
+  highlightCategoryButton();
+
+  filteredProducts = [...allProducts];
+  renderProducts();
+  updateProductsCount();
+}
+
+// =========================
+//  تصنيف الأقسام (الجانب الأيمن)
+// =========================
+
+function highlightCategoryButton() {
+  document.querySelectorAll(".category-item").forEach((btn) => {
+    btn.classList.remove("active");
+    const key = btn.getAttribute("data-category");
+    if (key === currentCategory) {
+      btn.classList.add("active");
     }
   });
 }
 
-// ===== Init on page load =====
-document.addEventListener("DOMContentLoaded", () => {
-  updateCartCount();
-  loadProducts();
-  renderCart();
-  initAdminForm();
-
-  const checkoutBtn = document.getElementById("checkout-btn");
-  if (checkoutBtn) {
-    checkoutBtn.addEventListener("click", () => {
-      alert("هذه عملية دفع تجريبية فقط (لا يوجد بوابة دفع حقيقية).");
+function setupCategoryFilters() {
+  document.querySelectorAll(".category-item").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      currentCategory = btn.getAttribute("data-category") || "all";
+      highlightCategoryButton();
+      applyFilters();
     });
+  });
+}
+
+// =========================
+//  تهيئة الصفحة
+// =========================
+
+function setupUIEvents() {
+  const searchInput = document.getElementById("searchInput");
+  const filterBtn = document.getElementById("applyFiltersBtn");
+  const resetBtn = document.getElementById("resetFiltersBtn");
+
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      // نخلي البحث مباشر
+      applyFilters();
+    });
+  }
+
+  if (filterBtn) {
+    filterBtn.addEventListener("click", () => {
+      applyFilters();
+    });
+  }
+
+  if (resetBtn) {
+    resetBtn.addEventListener("click", () => {
+      resetFilters();
+    });
+  }
+
+  setupCategoryFilters();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  // نتأكد إننا في صفحة المتجر (فيها productsGrid)
+  if (document.getElementById("productsGrid")) {
+    loadProducts();
+    setupUIEvents();
+  } else {
+    // لو صفحة ثانية مثل login / register / cart
+    updateCartBadge();
   }
 });
