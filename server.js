@@ -8,16 +8,15 @@ const { JSONFile } = require("lowdb/node");
 
 const dbFile = path.join(__dirname, "db.json");
 const adapter = new JSONFile(dbFile);
-const db = new Low(adapter);
 
-// === Default data (لأول مرة فقط) ===
+// default data لازم يُمرَّر للـ constructor في النسخة الجديدة من lowdb
 const defaultData = {
   users: [
     {
       id: 1,
       name: "Admin",
       email: "admin@example.com",
-      password: "admin123", // فقط للتجارب، لا تستخدمه في مشروع حقيقي
+      password: "admin123", // فقط للتجربة
       role: "admin",
     },
   ],
@@ -41,19 +40,19 @@ const defaultData = {
   ],
 };
 
-// === Initialize database ===
-async function initDB() {
+// هنا نمرّر الـ defaultData عشان ما يطلع خطأ "missing default data"
+const db = new Low(adapter, defaultData);
+
+// helper عشان نتأكد إن الـ DB متضبوطة قبل أي عملية
+async function ensureDB() {
   await db.read();
 
   if (!db.data) {
     db.data = defaultData;
     await db.write();
-    console.log("DB initialized with default data");
   } else {
-    // تأكد أن المفاتيح موجودة
     db.data.users ||= [];
     db.data.products ||= [];
-    await db.write();
   }
 }
 
@@ -65,21 +64,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-// نتاكد أن الـ DB جاهزة قبل أي طلب
-app.use(async (req, res, next) => {
-  await initDB();
-  next();
-});
+// ===== PRODUCTS API =====
 
-// ====== PRODUCTS API ======
-
-// GET all products
+// جلب كل المنتجات
 app.get("/api/products", async (req, res) => {
-  await db.read();
+  await ensureDB();
   res.json(db.data.products || []);
 });
 
-// ADD new product
+// إضافة منتج جديد
 app.post("/api/products", async (req, res) => {
   try {
     const { name, price, category, image, description } = req.body;
@@ -88,8 +81,7 @@ app.post("/api/products", async (req, res) => {
       return res.status(400).json({ message: "name و price مطلوبين" });
     }
 
-    await db.read();
-    db.data.products ||= [];
+    await ensureDB();
 
     const newProduct = {
       id: Date.now(),
@@ -110,9 +102,9 @@ app.post("/api/products", async (req, res) => {
   }
 });
 
-// ====== AUTH & USERS API ======
+// ===== AUTH & USERS API =====
 
-// Register new user
+// تسجيل جديد
 app.post("/api/register", async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -120,8 +112,7 @@ app.post("/api/register", async (req, res) => {
     return res.status(400).json({ message: "كل الحقول مطلوبة" });
   }
 
-  await db.read();
-  db.data.users ||= [];
+  await ensureDB();
 
   const exists = db.data.users.find((u) => u.email === email);
   if (exists) {
@@ -139,7 +130,6 @@ app.post("/api/register", async (req, res) => {
   db.data.users.push(newUser);
   await db.write();
 
-  // نرجع البيانات بدون الباسوورد
   res.status(201).json({
     id: newUser.id,
     name: newUser.name,
@@ -148,12 +138,11 @@ app.post("/api/register", async (req, res) => {
   });
 });
 
-// Login
+// تسجيل الدخول
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
 
-  await db.read();
-  db.data.users ||= [];
+  await ensureDB();
 
   const user = db.data.users.find(
     (u) => u.email === email && u.password === password
@@ -171,12 +160,9 @@ app.post("/api/login", async (req, res) => {
   });
 });
 
-// Get users list for admin dashboard
+// جلب المستخدمين (للأدمن)
 app.get("/api/users", async (req, res) => {
-  await db.read();
-  db.data.users ||= [];
-
-  // لا نرجع الباسوورد في الـ API (أفضل أمانًا)
+  await ensureDB();
   const usersWithoutPassword = db.data.users.map(({ password, ...rest }) => rest);
   res.json(usersWithoutPassword);
 });

@@ -1,29 +1,4 @@
 {
-  "products": [
-    {
-      "id": 1,
-      "name": "Nike Shoes",
-      "description": "Modern running shoes",
-      "price": 199,
-      "image": "shoes.jpg",
-      "category": "Sport"
-    },
-    {
-      "id": 2,
-      "name": "Apple Watch",
-      "description": "Smart fitness watch",
-      "price": 299,
-      "image": "watch.jpg",
-      "category": "Electronics"
-    }
-  ],
-  "users": [
-    {
-      "id": 1,
-      "name": "Admin",
-      "email": "admin@example.com",
-      "password": "admin123",
-      "role": "admin"
-    }
-  ]
+  "users": [],
+  "products": []
 }
