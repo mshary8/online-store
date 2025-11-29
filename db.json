@@ -2,56 +2,14 @@
   "users": [
     {
       "id": 1,
-      "name": "Meshari",
+      "name": "Admin Meshari",
       "email": "meshari@gmail.com",
-      "password": "1234561",
-      "role": "admin"
+      "passwordHash": "24ab417505c3a3fa6cc67ca53afc640cec2c0fbb3a8a53a2f59c8798a2f3d74a",
+      "role": "admin",
+      "createdAt": "2025-01-01T00:00:00.000Z"
     }
   ],
-
-  "products": [
-    {
-      "id": 1,
-      "name": "Laptop Pro 1",
-      "price": 3999,
-      "category": "لابتوبات",
-      "image": "laptop1.jpg",
-      "description": "لابتوب احترافي للاستخدام اليومي"
-    },
-    {
-      "id": 2,
-      "name": "Laptop Pro 2",
-      "price": 4999,
-      "category": "لابتوبات",
-      "image": "laptop2.jpg",
-      "description": "لابتوب مميز للأعمال"
-    },
-    {
-      "id": 3,
-      "name": "Sony PS5",
-      "price": 2599,
-      "category": "أجهزة ترفيهية",
-      "image": "ps5.jpg",
-      "description": "بلايستيشن 5 نسخة جديدة"
-    },
-    {
-      "id": 4,
-      "name": "AirPods Pro",
-      "price": 899,
-      "category": "سماعات",
-      "image": "airpods.jpg",
-      "description": "سماعات عازلة للضوضاء"
-    },
-    {
-      "id": 5,
-      "name": "iPhone 15",
-      "price": 4999,
-      "category": "جوالات",
-      "image": "iphone15.jpg",
-      "description": "أحدث آيفون"
-    }
-  ],
-
+  "products": [],
   "cart": [],
   "orders": []
 }
