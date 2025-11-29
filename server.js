@@ -2,39 +2,43 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-const session = require("express-session");
 const crypto = require("crypto");
 
-// === إعداد lowdb ===
+// lowdb
 const { Low } = require("lowdb");
 const { JSONFile } = require("lowdb/node");
 
+// مسار ملف قاعدة البيانات
 const dbFile = path.join(__dirname, "db.json");
 
+// البيانات الافتراضية
 const defaultData = {
   products: [],
-  users: [],
-  sessions: [],
+  users: []
 };
 
 const adapter = new JSONFile(dbFile);
 const db = new Low(adapter, defaultData);
 
-// دالة هاش بسيطة لكلمة المرور
+// دالة هاش لكلمة المرور
 function hashPassword(password) {
   return crypto.createHash("sha256").update(password).digest("hex");
 }
 
-// === تهيئة قاعدة البيانات + إضافة الأدمن والمنتجات ===
+// دالة تهيئة قاعدة البيانات (أدمن + منتجات)
 async function initDB() {
   await db.read();
-  if (!db.data) db.data = { ...defaultData };
+  if (!db.data) {
+    db.data = { ...defaultData };
+  }
 
-  // 1) إنشاء حساب الأدمن لو مش موجود
+  // تأكد من وجود المصفوفات
+  if (!Array.isArray(db.data.users)) db.data.users = [];
+  if (!Array.isArray(db.data.products)) db.data.products = [];
+
+  // 1) إنشاء الأدمن لو غير موجود
   const adminEmail = "meshari@gmail.com";
   const adminPassword = "1234561";
-
-  if (!db.data.users) db.data.users = [];
 
   let admin = db.data.users.find((u) => u.email === adminEmail);
 
@@ -45,13 +49,13 @@ async function initDB() {
       email: adminEmail,
       passwordHash: hashPassword(adminPassword),
       role: "admin",
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toISOString()
     };
     db.data.users.push(admin);
     console.log("✅ Admin user created:", adminEmail);
   }
 
-  // 2) توليد 100 منتج لو القائمة فاضية
+  // 2) توليد 100 منتج لو ما فيه منتجات
   if (!db.data.products || db.data.products.length === 0) {
     const products = [];
     let id = 1;
@@ -66,71 +70,71 @@ async function initDB() {
         baseName: "Laptop Pro",
         min: 2500,
         max: 6000,
-        image: "laptop.jpg",
+        image: "laptop.jpg"
       },
       {
         category: "الإلكترونيات › الجوالات 📱",
         baseName: "Smart Phone",
         min: 1500,
         max: 4500,
-        image: "phone.jpg",
+        image: "phone.jpg"
       },
       {
         category: "الإلكترونيات › التابلت 📲",
         baseName: "Tablet Plus",
         min: 900,
         max: 3000,
-        image: "tablet.jpg",
+        image: "tablet.jpg"
       },
       {
         category: "الإلكترونيات › السماعات 🎧",
         baseName: "Wireless Headset",
         min: 200,
         max: 900,
-        image: "headset.jpg",
+        image: "headset.jpg"
       },
       {
         category: "الإلكترونيات › الساعات الذكية ⌚",
         baseName: "Smart Watch",
         min: 300,
         max: 1500,
-        image: "watch.jpg",
+        image: "watch.jpg"
       },
       {
         category: "أجهزة الترفيه › (Sony / Xbox) 🎮",
         baseName: "Gaming Console",
         min: 1800,
         max: 3500,
-        image: "console.jpg",
+        image: "console.jpg"
       },
       {
         category: "أجهزة الترفيه › شاشات الألعاب 🖥️",
         baseName: "Gaming Monitor",
         min: 900,
         max: 2800,
-        image: "monitor.jpg",
+        image: "monitor.jpg"
       },
       {
         category: "أجهزة الترفيه › اشتراكات الألعاب 🎫",
         baseName: "Game Subscription",
         min: 50,
         max: 400,
-        image: "gamepass.jpg",
+        image: "gamepass.jpg"
       },
       {
         category: "الإلكترونيات › الإكسسوارات 🎒",
         baseName: "Tech Accessory",
         min: 50,
         max: 400,
-        image: "accessory.jpg",
+        image: "accessory.jpg"
       },
       {
         category: "الترفيه › اشتراكات المشاهدة 📺",
         baseName: "Streaming Plan",
         min: 25,
         max: 150,
-        image: "streaming.jpg",
-      },
+        image: "streaming.jpg"
+      }
     ];
 
     // 10 منتجات لكل مجموعة = 100 منتج
@@ -142,7 +146,7 @@ async function initDB() {
           category: group.category,
           price: rand(group.min, group.max),
           description: `منتج ${group.baseName} رقم ${i} مناسب للاستخدام اليومي بجودة عالية.`,
-          image: group.image,
+          image: group.image
         });
       }
     }
@@ -153,55 +157,22 @@ async function initDB() {
 
   await db.write();
   console.log(
-    "Database initialized ✅",
-    "| products:",
+    "Database initialized ✅ | products:",
     db.data.products.length,
     "| users:",
     db.data.users.length
   );
 }
 
-// === إعداد السيرفر ===
+// ===== إعداد السيرفر =====
 const app = express();
 const PORT = process.env.PORT || 10000;
 
 app.use(cors());
 app.use(express.json());
-app.use(
-  session({
-    secret: "meshari-tech-store-secret",
-    resave: false,
-    saveUninitialized: false,
-  })
-);
-
-// ملفات الواجهة (Front-end)
 app.use(express.static(path.join(__dirname, "public")));
 
-// مساعدة: جلب المستخدم من السيشن
-async function getCurrentUser(req) {
-  await db.read();
-  if (!req.session.userId) return null;
-  return db.data.users.find((u) => u.id === req.session.userId) || null;
-}
-
-function requireAuth(req, res, next) {
-  if (!req.session.userId) {
-    return res.status(401).json({ success: false, message: "غير مسموح" });
-  }
-  next();
-}
-
-async function requireAdmin(req, res, next) {
-  const user = await getCurrentUser(req);
-  if (!user || user.role !== "admin") {
-    return res.status(403).json({ success: false, message: "صلاحيات غير كافية" });
-  }
-  req.user = user;
-  next();
-}
-
-// === Auth APIs ===
+// ===== Auth APIs =====
 
 // تسجيل جديد
 app.post("/api/register", async (req, res) => {
@@ -213,7 +184,8 @@ app.post("/api/register", async (req, res) => {
   }
 
   await db.read();
-  if (!db.data.users) db.data.users = [];
+
+  if (!Array.isArray(db.data.users)) db.data.users = [];
 
   const exists = db.data.users.find((u) => u.email === email);
   if (exists) {
@@ -230,7 +202,7 @@ app.post("/api/register", async (req, res) => {
     email,
     passwordHash: hashPassword(password),
     role: "user",
-    createdAt: new Date().toISOString(),
+    createdAt: new Date().toISOString()
   };
 
   db.data.users.push(newUser);
@@ -249,6 +221,8 @@ app.post("/api/login", async (req, res) => {
   }
 
   await db.read();
+  if (!Array.isArray(db.data.users)) db.data.users = [];
+
   const user = db.data.users.find(
     (u) => u.email === email && u.passwordHash === hashPassword(password)
   );
@@ -256,59 +230,38 @@ app.post("/api/login", async (req, res) => {
   if (!user) {
     return res.status(401).json({
       success: false,
-      message: "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+      message: "البريد الإلكتروني أو كلمة المرور غير صحيحة"
     });
   }
 
-  req.session.userId = user.id;
-
+  // ما في جلسات، نخلي الواجهة تتعامل مع isAdmin
   res.json({
     success: true,
     name: user.name,
     email: user.email,
     isAdmin: user.role === "admin",
-    token: "session", // فقط للتوافق مع الكود في الواجهة
+    token: "ok"
   });
 });
 
-// من أنا؟
-app.get("/api/auth/me", async (req, res) => {
-  const user = await getCurrentUser(req);
-  if (!user) return res.json({ user: null });
+// ===== APIs للمنتجات =====
 
-  res.json({
-    user: {
-      id: user.id,
-      username: user.name,
-      email: user.email,
-      role: user.role,
-    },
-  });
-});
-
-// تسجيل خروج
-app.post("/api/auth/logout", (req, res) => {
-  req.session.destroy(() => {
-    res.json({ success: true });
-  });
-});
-
-// === APIs للمنتجات ===
-
-// كل المنتجات (لواجهة المتجر)
+// كل المنتجات للمتجر
 app.get("/api/products", async (req, res) => {
   await db.read();
-  res.json(db.data.products || []);
+  if (!Array.isArray(db.data.products)) db.data.products = [];
+  res.json(db.data.products);
 });
 
-// منتجات الأدمن
-app.get("/api/admin/products", requireAdmin, async (req, res) => {
+// نفس المنتجات للوحة الأدمن (بدون حماية حقيقية، حماية على الواجهة فقط)
+app.get("/api/admin/products", async (req, res) => {
   await db.read();
-  res.json(db.data.products || []);
+  if (!Array.isArray(db.data.products)) db.data.products = [];
+  res.json(db.data.products);
 });
 
 // إضافة منتج من لوحة الإدارة
-app.post("/api/admin/products", requireAdmin, async (req, res) => {
+app.post("/api/admin/products", async (req, res) => {
   const { name, price, category, image, description } = req.body || {};
   if (!name || !price) {
     return res
@@ -317,7 +270,7 @@ app.post("/api/admin/products", requireAdmin, async (req, res) => {
   }
 
   await db.read();
-  if (!db.data.products) db.data.products = [];
+  if (!Array.isArray(db.data.products)) db.data.products = [];
 
   const newProduct = {
     id: db.data.products.length
@@ -327,7 +280,7 @@ app.post("/api/admin/products", requireAdmin, async (req, res) => {
     price: Number(price),
     category: category || "",
     image: image || "",
-    description: description || "",
+    description: description || ""
   };
 
   db.data.products.push(newProduct);
@@ -337,9 +290,10 @@ app.post("/api/admin/products", requireAdmin, async (req, res) => {
 });
 
 // حذف منتج
-app.delete("/api/admin/products/:id", requireAdmin, async (req, res) => {
+app.delete("/api/admin/products/:id", async (req, res) => {
   const id = Number(req.params.id);
   await db.read();
+  if (!Array.isArray(db.data.products)) db.data.products = [];
 
   const before = db.data.products.length;
   db.data.products = db.data.products.filter((p) => p.id !== id);
@@ -352,17 +306,14 @@ app.delete("/api/admin/products/:id", requireAdmin, async (req, res) => {
   res.json({ success: true });
 });
 
-// توجيه / إلى index.html
+// توجيه /
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// تشغيل السيرفر بعد تهيئة قاعدة البيانات
-async function start() {
-  await initDB();
+// تشغيل السيرفر بعد التهيئة
+initDB().then(() => {
   app.listen(PORT, () => {
     console.log("Server running on port", PORT);
   });
-}
-
-start();
+});
