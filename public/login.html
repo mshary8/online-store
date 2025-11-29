@@ -31,12 +31,17 @@
     </div>
 
     <script>
-      const form = document.getElementById("loginForm");
-      const msg = document.getElementById("loginMessage");
+      const loginForm = document.getElementById("loginForm");
+      const loginMsg = document.getElementById("loginMessage");
 
-      form.addEventListener("submit", async (e) => {
+      function saveCurrentUser(user) {
+        localStorage.setItem("currentUser", JSON.stringify(user));
+      }
+
+      loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        msg.textContent = "";
+        loginMsg.textContent = "";
+        loginMsg.classList.remove("error");
 
         const email = document.getElementById("loginEmail").value.trim();
         const password = document
@@ -52,29 +57,25 @@
 
           const data = await res.json();
 
-          if (!data.success) {
-            msg.textContent = data.message || "خطأ في تسجيل الدخول";
-            msg.classList.add("error");
+          if (!res.ok || !data.success) {
+            loginMsg.textContent = data.message || "خطأ في تسجيل الدخول";
+            loginMsg.classList.add("error");
             return;
           }
 
-          // حفظ معلومات بسيطة في localStorage
-          localStorage.setItem("userName", data.name);
-          localStorage.setItem("isAdmin", data.isAdmin ? "true" : "false");
-          localStorage.setItem("authToken", data.token);
-
-          msg.textContent = "تم تسجيل الدخول بنجاح ✅";
+          // حفظ المستخدم (id, name, email, role)
+          saveCurrentUser(data.user);
 
           // توجيه حسب نوع المستخدم
-          if (data.isAdmin) {
+          if (data.user.role === "admin") {
             window.location.href = "admin.html";
           } else {
             window.location.href = "index.html";
           }
         } catch (err) {
           console.error(err);
-          msg.textContent = "حدث خطأ في الاتصال بالسيرفر";
-          msg.classList.add("error");
+          loginMsg.textContent = "حدث خطأ في الاتصال بالسيرفر";
+          loginMsg.classList.add("error");
         }
       });
     </script>

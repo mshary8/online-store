@@ -42,6 +42,7 @@
       regForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         regMsg.textContent = "";
+        regMsg.classList.remove("error");
 
         const name = document.getElementById("regName").value.trim();
         const email = document.getElementById("regEmail").value.trim();
@@ -56,14 +57,15 @@
 
           const data = await res.json();
 
-          if (!data.success) {
-            regMsg.textContent = data.message || "لم يتم إنشاء الحساب";
+          if (!res.ok || !data.success) {
+            regMsg.textContent =
+              data.message || "لم يتم إنشاء الحساب";
             regMsg.classList.add("error");
             return;
           }
 
-          regMsg.textContent = data.message || "تم إنشاء الحساب بنجاح";
-          regMsg.classList.remove("error");
+          regMsg.textContent =
+            data.message || "تم إنشاء الحساب بنجاح ✅";
 
           // بعد ثانيتين روح لصفحة تسجيل الدخول
           setTimeout(() => {
