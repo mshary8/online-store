@@ -1,132 +1,91 @@
-const express = require("express");
-const path = require("path");
-const session = require("express-session");
-const fs = require("fs");
-const { Low } = require("lowdb");
-const { JSONFile } = require("lowdb/node");
+import express from "express";
+import session from "express-session";
+import { Low } from "lowdb";
+import { JSONFile } from "lowdb/node";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-
-const file = path.join(__dirname, "db.json");
-const adapter = new JSONFile(file);
-const db = new Low(adapter);
-
-// ---------------- INIT DATABASE ----------------
-async function initDB() {
-  await db.read();
-
-  if (!db.data) {
-    db.data = { users: [], products: [] };
-  }
-
-  if (!db.data.users) db.data.users = [];
-  if (!db.data.products) db.data.products = [];
-
-  // Admin user
-  if (!db.data.users.find((u) => u.email === "meshari@gmail.com")) {
-    db.data.users.push({
-      id: Date.now(),
-      name: "Meshari",
-      email: "meshari@gmail.com",
-      password: "1234561",
-      role: "admin",
-    });
-    console.log("✔ Created admin account");
-  }
-
-  // Seed 100 products
-  if (db.data.products.length === 0) {
-    for (let i = 1; i <= 100; i++) {
-      db.data.products.push({
-        id: i,
-        name: `Laptop Pro ${i}`,
-        price: 2000 + i,
-        category: "لابتوبات",
-        image: "",
-        description: `وصف لابتوب رقم ${i}`,
-      });
-    }
-    console.log("✔ Seeded 100 demo products");
-  }
-
-  await db.write();
-  console.log("Database initialized.");
-}
-initDB();
-
-// ------------------------------------------------------------
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// ------------------------------
+// LOWDB SETUP
+// ------------------------------
+const file = path.join(__dirname, "db.json");
+const adapter = new JSONFile(file);
+const db = new Low(adapter, { users: [], products: [], orders: [] });
+
+await db.read();
+
+// إذا كان فارغ → نعبّيه ببيانات افتراضية
+if (!db.data || Object.keys(db.data).length === 0) {
+  db.data = {
+    users: [
+      {
+        id: 1,
+        name: "Meshari",
+        email: "meshari@gmail.com",
+        password: "1234561",
+        role: "admin"
+      }
+    ],
+    products: [],
+    orders: []
+  };
+
+  await db.write();
+}
+
+console.log("Database initialized:", db.data);
+
+// ------------------------------
+// SESSION
+// ------------------------------
 app.use(
   session({
-    secret: "secret123",
+    secret: "STORE_SECRET",
+    saveUninitialized: false,
     resave: false,
-    saveUninitialized: true,
   })
 );
 
-app.use(express.static("public"));
+// ------------------------------
+// API ROUTES
+// ------------------------------
 
-// ---------------- API ENDPOINTS ----------------
-
-// Login
+// تسجيل دخول
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
 
-  await db.read();
   const user = db.data.users.find(
     (u) => u.email === email && u.password === password
   );
 
-  if (!user) return res.json({ success: false, message: "خطأ في البيانات" });
+  if (!user) {
+    return res.status(401).json({ success: false, message: "بيانات غير صحيحة" });
+  }
 
   req.session.user = user;
-
   res.json({ success: true, user });
 });
 
-// Register
-app.post("/api/register", async (req, res) => {
-  const { name, email, password } = req.body;
-
-  await db.read();
-
-  if (db.data.users.find((u) => u.email === email)) {
-    return res.json({ success: false, message: "البريد مستخدم" });
-  }
-
-  const newUser = {
-    id: Date.now(),
-    name,
-    email,
-    password,
-    role: "user",
-  };
-
-  db.data.users.push(newUser);
-  await db.write();
-
-  res.json({ success: true });
-});
-
-// Get products
+// جميع المنتجات
 app.get("/api/products", async (req, res) => {
-  await db.read();
   res.json(db.data.products);
 });
 
-// Add product (admin)
+// إضافة منتج
 app.post("/api/products", async (req, res) => {
   const { name, price, category, image, description } = req.body;
-
-  await db.read();
 
   const newProduct = {
     id: Date.now(),
     name,
-    price: Number(price),
+    price,
     category,
     image,
     description,
@@ -135,19 +94,15 @@ app.post("/api/products", async (req, res) => {
   db.data.products.push(newProduct);
   await db.write();
 
-  res.json({ success: true });
+  res.json({ success: true, product: newProduct });
 });
 
-// Users list (admin)
-app.get("/api/users", async (req, res) => {
-  await db.read();
-  res.json(db.data.users);
-});
-
-// ------------------------------------------------------------
+// ------------------------------
+// STATIC FILES
+// ------------------------------
+app.use(express.static(path.join(__dirname, "public")));
 
 const PORT = process.env.PORT || 10000;
-
-app.listen(PORT, () => {
-  console.log("Server running on port " + PORT);
-});
+app.listen(PORT, () =>
+  console.log(`Server running on http://localhost:${PORT}`)
+);
