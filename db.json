@@ -1,287 +1,4 @@
 {
-  "products": [
-    {
-      "id": 1,
-      "name": "لابتوبات 💻 - منتج رقم 1",
-      "category": "laptops",
-      "categoryLabel": "لابتوبات 💻",
-      "price": 2500,
-      "description": "منتج 1 من فئة لابتوبات 💻 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 2,
-      "name": "لابتوبات 💻 - منتج رقم 2",
-      "category": "laptops",
-      "categoryLabel": "لابتوبات 💻",
-      "price": 2944,
-      "description": "منتج 2 من فئة لابتوبات 💻 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 3,
-      "name": "لابتوبات 💻 - منتج رقم 3",
-      "category": "laptops",
-      "categoryLabel": "لابتوبات 💻",
-      "price": 3388,
-      "description": "منتج 3 من فئة لابتوبات 💻 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 4,
-      "name": "لابتوبات 💻 - منتج رقم 4",
-      "category": "laptops",
-      "categoryLabel": "لابتوبات 💻",
-      "price": 3832,
-      "description": "منتج 4 من فئة لابتوبات 💻 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 5,
-      "name": "لابتوبات 💻 - منتج رقم 5",
-      "category": "laptops",
-      "categoryLabel": "لابتوبات 💻",
-      "price": 4276,
-      "description": "منتج 5 من فئة لابتوبات 💻 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 6,
-      "name": "لابتوبات 💻 - منتج رقم 6",
-      "category": "laptops",
-      "categoryLabel": "لابتوبات 💻",
-      "price": 4720,
-      "description": "منتج 6 من فئة لابتوبات 💻 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 7,
-      "name": "لابتوبات 💻 - منتج رقم 7",
-      "category": "laptops",
-      "categoryLabel": "لابتوبات 💻",
-      "price": 5164,
-      "description": "منتج 7 من فئة لابتوبات 💻 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 8,
-      "name": "لابتوبات 💻 - منتج رقم 8",
-      "category": "laptops",
-      "categoryLabel": "لابتوبات 💻",
-      "price": 5608,
-      "description": "منتج 8 من فئة لابتوبات 💻 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 9,
-      "name": "لابتوبات 💻 - منتج رقم 9",
-      "category": "laptops",
-      "categoryLabel": "لابتوبات 💻",
-      "price": 6052,
-      "description": "منتج 9 من فئة لابتوبات 💻 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 10,
-      "name": "لابتوبات 💻 - منتج رقم 10",
-      "category": "laptops",
-      "categoryLabel": "لابتوبات 💻",
-      "price": 6496,
-      "description": "منتج 10 من فئة لابتوبات 💻 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-
-    {
-      "id": 11,
-      "name": "جوالات 📱 - منتج رقم 1",
-      "category": "phones",
-      "categoryLabel": "جوالات 📱",
-      "price": 1500,
-      "description": "منتج 1 من فئة جوالات 📱 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 12,
-      "name": "جوالات 📱 - منتج رقم 2",
-      "category": "phones",
-      "categoryLabel": "جوالات 📱",
-      "price": 1944,
-      "description": "منتج 2 من فئة جوالات 📱 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 13,
-      "name": "جوالات 📱 - منتج رقم 3",
-      "category": "phones",
-      "categoryLabel": "جوالات 📱",
-      "price": 2388,
-      "description": "منتج 3 من فئة جوالات 📱 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 14,
-      "name": "جوالات 📱 - منتج رقم 4",
-      "category": "phones",
-      "categoryLabel": "جوالات 📱",
-      "price": 2832,
-      "description": "منتج 4 من فئة جوالات 📱 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 15,
-      "name": "جوالات 📱 - منتج رقم 5",
-      "category": "phones",
-      "categoryLabel": "جوالات 📱",
-      "price": 3276,
-      "description": "منتج 5 من فئة جوالات 📱 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 16,
-      "name": "جوالات 📱 - منتج رقم 6",
-      "category": "phones",
-      "categoryLabel": "جوالات 📱",
-      "price": 3720,
-      "description": "منتج 6 من فئة جوالات 📱 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 17,
-      "name": "جوالات 📱 - منتج رقم 7",
-      "category": "phones",
-      "categoryLabel": "جوالات 📱",
-      "price": 4164,
-      "description": "منتج 7 من فئة جوالات 📱 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 18,
-      "name": "جوالات 📱 - منتج رقم 8",
-      "category": "phones",
-      "categoryLabel": "جوالات 📱",
-      "price": 4608,
-      "description": "منتج 8 من فئة جوالات 📱 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 19,
-      "name": "جوالات 📱 - منتج رقم 9",
-      "category": "phones",
-      "categoryLabel": "جوالات 📱",
-      "price": 5052,
-      "description": "منتج 9 من فئة جوالات 📱 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 20,
-      "name": "جوالات 📱 - منتج رقم 10",
-      "category": "phones",
-      "categoryLabel": "جوالات 📱",
-      "price": 5496,
-      "description": "منتج 10 من فئة جوالات 📱 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-
-    {
-      "id": 21,
-      "name": "سماعات 🎧 - منتج رقم 1",
-      "category": "headphones",
-      "categoryLabel": "سماعات 🎧",
-      "price": 150,
-      "description": "منتج 1 من فئة سماعات 🎧 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 22,
-      "name": "سماعات 🎧 - منتج رقم 2",
-      "category": "headphones",
-      "categoryLabel": "سماعات 🎧",
-      "price": 283,
-      "description": "منتج 2 من فئة سماعات 🎧 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 23,
-      "name": "سماعات 🎧 - منتج رقم 3",
-      "category": "headphones",
-      "categoryLabel": "سماعات 🎧",
-      "price": 416,
-      "description": "منتج 3 من فئة سماعات 🎧 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 24,
-      "name": "سماعات 🎧 - منتج رقم 4",
-      "category": "headphones",
-      "categoryLabel": "سماعات 🎧",
-      "price": 549,
-      "description": "منتج 4 من فئة سماعات 🎧 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 25,
-      "name": "سماعات 🎧 - منتج رقم 5",
-      "category": "headphones",
-      "categoryLabel": "سماعات 🎧",
-      "price": 682,
-      "description": "منتج 5 من فئة سماعات 🎧 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 26,
-      "name": "سماعات 🎧 - منتج رقم 6",
-      "category": "headphones",
-      "categoryLabel": "سماعات 🎧",
-      "price": 815,
-      "description": "منتج 6 من فئة سماعات 🎧 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 27,
-      "name": "سماعات 🎧 - منتج رقم 7",
-      "category": "headphones",
-      "categoryLabel": "سماعات 🎧",
-      "price": 948,
-      "description": "منتج 7 من فئة سماعات 🎧 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 28,
-      "name": "سماعات 🎧 - منتج رقم 8",
-      "category": "headphones",
-      "categoryLabel": "سماعات 🎧",
-      "price": 1081,
-      "description": "منتج 8 من فئة سماعات 🎧 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 29,
-      "name": "سماعات 🎧 - منتج رقم 9",
-      "category": "headphones",
-      "categoryLabel": "سماعات 🎧",
-      "price": 1214,
-      "description": "منتج 9 من فئة سماعات 🎧 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    },
-    {
-      "id": 30,
-      "name": "سماعات 🎧 - منتج رقم 10",
-      "category": "headphones",
-      "categoryLabel": "سماعات 🎧",
-      "price": 1347,
-      "description": "منتج 10 من فئة سماعات 🎧 مناسب للاستخدام اليومي.",
-      "image": "/images/placeholder.png"
-    }
-
-  ],
-
-  "users": [
-    {
-      "id": 1,
-      "name": "Admin",
-      "email": "admin@store.com",
-      "password": "admin123",
-      "role": "admin"
-    }
-  ]
+  "products": [],
+  "users": []
 }

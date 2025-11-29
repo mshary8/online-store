@@ -1,357 +1,351 @@
+// server.js
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs").promises;
 const session = require("express-session");
 
-// ============ LOWDB SETUP ============
-const { Low } = require("lowdb");
-const { JSONFile } = require("lowdb/node");
+const app = express();
 
+// Render يحب تستخدم المتغير PORT
+const PORT = process.env.PORT || 10000;
 const dbFile = path.join(__dirname, "db.json");
 
-// لازم نعطي lowdb بيانات افتراضية عشان ما يطلع
-// الخطأ: lowdb: missing default data
-const defaultData = {
-  products: [],
-  users: []
-};
-
-const adapter = new JSONFile(dbFile);
-const db = new Low(adapter, defaultData);
-
-// ============ تهيئة قاعدة البيانات ============
-async function initDB() {
-  await db.read();
-
-  // لو الملف كان فاضي {} أو undefined
-  if (!db.data) {
-    db.data = { products: [], users: [] };
+// ===== Helpers لقراءة/كتابة db.json =====
+async function readDB() {
+  try {
+    const txt = await fs.readFile(dbFile, "utf8");
+    const data = JSON.parse(txt || "{}");
+    if (!data.products) data.products = [];
+    if (!data.users) data.users = [];
+    return data;
+  } catch (err) {
+    if (err.code === "ENOENT") {
+      const initial = { products: [], users: [] };
+      await writeDB(initial);
+      return initial;
+    }
+    throw err;
   }
-
-  if (!Array.isArray(db.data.products)) db.data.products = [];
-  if (!Array.isArray(db.data.users)) db.data.users = [];
-
-  // إنشاء أدمن افتراضي لو مو موجود
-  if (!db.data.users.some((u) => u.role === "admin")) {
-    db.data.users.push({
-      id: Date.now(),
-      name: "Admin",
-      email: "admin@store.com",
-      password: "admin123", // للتجربة فقط (مو آمن للإنتاج)
-      role: "admin"
-    });
-    console.log("Created default admin: admin@store.com / admin123");
-  }
-
-  // توليد 100 منتج تجريبي لو ما فيه منتجات
-  if (db.data.products.length === 0) {
-    db.data.products = generateSeedProducts();
-    console.log("Seeded 100 demo products");
-  }
-
-  await db.write();
-  console.log("Database initialized ✅");
 }
 
-// ============ توليد منتجات تجريبية ============
-function randomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+async function writeDB(data) {
+  await fs.writeFile(dbFile, JSON.stringify(data, null, 2), "utf8");
 }
 
-function generateSeedProducts() {
+// ===== توليد منتجات تجريبية =====
+function generateInitialProducts() {
+  const categories = [
+    { key: "laptops", name: "لابتوبات 💻" },
+    { key: "phones", name: "الجوالات 📱" },
+    { key: "headphones", name: "السماعات 🎧" },
+    { key: "tablets", name: "التابلت 🧾" },
+    { key: "monitors", name: "الشاشات 🖥️" },
+    { key: "consoles", name: "أجهزة الترفيه (Sony / Xbox) 🎮" },
+    { key: "gaming-screens", name: "شاشات الألعاب 🕹️" },
+    { key: "gaming-accessories", name: "إكسسوارات الألعاب 🎯" },
+    { key: "streaming", name: "اشتراكات منصات المشاهدة 📺" },
+    { key: "other-subs", name: "اشتراكات وخدمات أخرى 🌐" },
+  ];
+
   const products = [];
   let id = 1;
 
-  const categories = [
-    {
-      key: "laptops",
-      label: "لابتوبات 💻",
-      minPrice: 2500,
-      maxPrice: 7000,
-      image: "laptop.jpg"
-    },
-    {
-      key: "phones",
-      label: "جوالات 📱",
-      minPrice: 1500,
-      maxPrice: 5000,
-      image: "phone.jpg"
-    },
-    {
-      key: "headphones",
-      label: "سماعات 🎧",
-      minPrice: 150,
-      maxPrice: 1200,
-      image: "headphones.jpg"
-    },
-    {
-      key: "consoles",
-      label: "أجهزة ترفيه (Sony / Xbox) 🎮",
-      minPrice: 1500,
-      maxPrice: 4000,
-      image: "console.jpg"
-    },
-    {
-      key: "monitors",
-      label: "شاشات كمبيوتر 🖥️",
-      minPrice: 700,
-      maxPrice: 2500,
-      image: "monitor.jpg"
-    },
-    {
-      key: "storage",
-      label: "وحدات تخزين (SSD / HDD) 💾",
-      minPrice: 150,
-      maxPrice: 900,
-      image: "storage.jpg"
-    },
-    {
-      key: "accessories",
-      label: "إكسسوارات (كيبورد / ماوس) ⌨️",
-      minPrice: 50,
-      maxPrice: 500,
-      image: "accessories.jpg"
-    },
-    {
-      key: "smart-home",
-      label: "أجهزة منزل ذكي 🏠",
-      minPrice: 200,
-      maxPrice: 1500,
-      image: "smarthome.jpg"
-    },
-    {
-      key: "streaming",
-      label: "اشتراكات منصات مشاهدة 📺",
-      minPrice: 20,
-      maxPrice: 100,
-      image: "streaming.jpg"
-    },
-    {
-      key: "gaming-sub",
-      label: "اشتراكات ألعاب 🎮☁️",
-      minPrice: 30,
-      maxPrice: 150,
-      image: "gaming-sub.jpg"
-    }
-  ];
-
-  categories.forEach((cat) => {
+  for (const cat of categories) {
     for (let i = 1; i <= 10; i++) {
-      const price = randomInt(cat.minPrice, cat.maxPrice);
-      const product = {
+      const basePrice = 200 + i * 50;
+      products.push({
         id: id++,
-        name: `${cat.label} - منتج رقم ${i}`,
-        category: cat.key, // نستخدمه في الفلتر في الواجهة الأمامية
-        categoryLabel: cat.label,
-        price,
-        description: `منتج من فئة ${cat.label} مناسب للاستخدام اليومي.`,
-        image: `/images/${cat.image}`
-      };
-      products.push(product);
+        name:
+          cat.key === "laptops"
+            ? `Laptop Pro ${i}`
+            : cat.key === "phones"
+            ? `Smart Phone ${i}`
+            : cat.key === "headphones"
+            ? `Wireless Headset ${i}`
+            : cat.key === "tablets"
+            ? `Tablet ${i}`
+            : cat.key === "monitors"
+            ? `4K Monitor ${i}`
+            : cat.key === "consoles"
+            ? i % 2 === 0
+              ? `PlayStation 5 Bundle ${i}`
+              : `Xbox Series X Bundle ${i}`
+            : cat.key === "gaming-screens"
+            ? `Gaming Screen ${i}`
+            : cat.key === "gaming-accessories"
+            ? `Gaming Mouse ${i}`
+            : cat.key === "streaming"
+            ? `اشتراك منصة مشاهدة ${i}`
+            : `اشتراك خدمة رقم ${i}`,
+        category: cat.key,
+        categoryLabel: cat.name,
+        price:
+          cat.key === "streaming" || cat.key === "other-subs"
+            ? 20 + i * 5
+            : basePrice + i * 30,
+        image:
+          cat.key === "laptops"
+            ? "laptop.jpg"
+            : cat.key === "phones"
+            ? "phone.jpg"
+            : cat.key === "headphones"
+            ? "headphones.jpg"
+            : cat.key === "tablets"
+            ? "tablet.jpg"
+            : cat.key === "monitors"
+            ? "monitor.jpg"
+            : cat.key === "consoles"
+            ? "console.jpg"
+            : cat.key === "gaming-screens"
+            ? "gaming-screen.jpg"
+            : cat.key === "gaming-accessories"
+            ? "gaming-accessory.jpg"
+            : "subscription.jpg",
+        description:
+          "منتج تجريبي بجودة عالية، مناسب للاستخدام اليومي أو الترفيهي.",
+      });
     }
-  });
+  }
 
   return products;
 }
 
-// ============ إعداد السيرفر ============
-const app = express();
-const PORT = process.env.PORT || 10000;
+// ===== تهيئة قاعدة البيانات أول مرة =====
+async function seedDatabaseIfNeeded() {
+  const db = await readDB();
 
+  // تأكد من وجود admin
+  if (!db.users || !Array.isArray(db.users)) db.users = [];
+  const hasAdmin = db.users.some((u) => u.role === "admin");
+  if (!hasAdmin) {
+    db.users.push({
+      id: 1,
+      name: "Admin",
+      email: "admin@store.com",
+      password: "123456", // للتجربة فقط
+      role: "admin",
+    });
+    console.log("✔️ Admin user created: admin@store.com / 123456");
+  }
+
+  // تأكد من وجود منتجات
+  if (!db.products || !Array.isArray(db.products) || db.products.length === 0) {
+    db.products = generateInitialProducts();
+    console.log("✔️ Seeded demo products (100 items)");
+  }
+
+  await writeDB(db);
+}
+
+// ===== إعدادات Express =====
 app.use(cors());
 app.use(express.json());
+
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "dev-secret",
+    secret: "meshari-tech-store-secret",
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
   })
 );
 
-// ملفات الواجهة الأمامية
+// ملفات الواجهة
 app.use(express.static(path.join(__dirname, "public")));
 
-// ميدل وير لتحميل المستخدم من الـ session
-app.use(async (req, res, next) => {
-  await db.read();
-  const userId = req.session.userId;
-  if (userId) {
-    const user = db.data.users.find((u) => u.id === userId);
-    req.user = user || null;
-  } else {
-    req.user = null;
-  }
-  next();
-});
-
-// ميدل وير للتحقق من تسجيل الدخول
-function requireAuth(req, res, next) {
-  if (!req.user) {
-    return res.status(401).json({
-      success: false,
-      message: "يجب تسجيل الدخول أولاً"
-    });
-  }
-  next();
+// ===== دوال مساعدة للمستخدم الحالي =====
+async function getCurrentUser(req) {
+  if (!req.session.userId) return null;
+  const db = await readDB();
+  return db.users.find((u) => u.id === req.session.userId) || null;
 }
 
-// ميدل وير للأدمن فقط
-function requireAdmin(req, res, next) {
-  if (!req.user || req.user.role !== "admin") {
-    return res.status(403).json({
-      success: false,
-      message: "صلاحية الأدمن فقط"
-    });
+// ===== API: المنتجات =====
+app.get("/api/products", async (req, res) => {
+  try {
+    const db = await readDB();
+    res.json(db.products || []);
+  } catch (err) {
+    console.error("GET /api/products error:", err);
+    res.status(500).json({ message: "خطأ في جلب المنتجات" });
   }
-  next();
-}
-
-// ============ مسارات الأوث ============
-app.get("/api/auth/me", (req, res) => {
-  if (!req.user) return res.json({ user: null });
-  const { id, name, email, role } = req.user;
-  res.json({ user: { id, name, email, role } });
 });
 
+// ===== API: تسجيل جديد =====
 app.post("/api/register", async (req, res) => {
-  const { name, email, password } = req.body;
+  try {
+    const { name, email, password } = req.body || {};
+    if (!name || !email || !password) {
+      return res
+        .status(400)
+        .json({ success: false, message: "البيانات غير مكتملة" });
+    }
 
-  if (!name || !email || !password) {
-    return res
-      .status(400)
-      .json({ success: false, message: "البيانات غير مكتملة" });
+    const db = await readDB();
+    const exists = db.users.find((u) => u.email === email);
+    if (exists) {
+      return res
+        .status(400)
+        .json({ success: false, message: "هذا البريد مسجل مسبقًا" });
+    }
+
+    const newUser = {
+      id: db.users.length ? db.users[db.users.length - 1].id + 1 : 2,
+      name,
+      email,
+      password, // عادي plain للتجربة
+      role: "user",
+    };
+    db.users.push(newUser);
+    await writeDB(db);
+
+    res.json({ success: true, message: "تم إنشاء الحساب بنجاح" });
+  } catch (err) {
+    console.error("POST /api/register error:", err);
+    res.status(500).json({ success: false, message: "خطأ في السيرفر" });
   }
-
-  await db.read();
-
-  const exists = db.data.users.find((u) => u.email === email);
-  if (exists) {
-    return res
-      .status(400)
-      .json({ success: false, message: "البريد الإلكتروني مستخدم من قبل" });
-  }
-
-  const user = {
-    id: Date.now(),
-    name,
-    email,
-    password, // للتجربة فقط
-    role: "user"
-  };
-
-  db.data.users.push(user);
-  await db.write();
-
-  res.json({ success: true, message: "تم إنشاء الحساب بنجاح" });
 });
 
+// ===== API: تسجيل الدخول =====
 app.post("/api/login", async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body || {};
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ success: false, message: "البيانات غير مكتملة" });
+    }
 
-  await db.read();
-  const user = db.data.users.find(
-    (u) => u.email === email && u.password === password
-  );
+    const db = await readDB();
+    const user = db.users.find(
+      (u) => u.email === email && u.password === password
+    );
 
-  if (!user) {
-    return res
-      .status(401)
-      .json({ success: false, message: "بيانات الدخول غير صحيحة" });
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+      });
+    }
+
+    req.session.userId = user.id;
+
+    res.json({
+      success: true,
+      name: user.name,
+      isAdmin: user.role === "admin",
+    });
+  } catch (err) {
+    console.error("POST /api/login error:", err);
+    res.status(500).json({ success: false, message: "خطأ في السيرفر" });
   }
-
-  req.session.userId = user.id;
-
-  res.json({
-    success: true,
-    message: "تم تسجيل الدخول بنجاح",
-    name: user.name,
-    isAdmin: user.role === "admin"
-  });
 });
 
+// ===== API: معلومات المستخدم الحالي =====
+app.get("/api/auth/me", async (req, res) => {
+  try {
+    const user = await getCurrentUser(req);
+    if (!user) return res.json({ user: null });
+
+    res.json({
+      user: {
+        id: user.id,
+        username: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (err) {
+    console.error("GET /api/auth/me error:", err);
+    res.status(500).json({ user: null });
+  }
+});
+
+// ===== API: تسجيل الخروج =====
 app.post("/api/auth/logout", (req, res) => {
   req.session.destroy(() => {
     res.json({ success: true });
   });
 });
 
-// ============ مسارات المنتجات (الواجهة الأمامية) ============
-app.get("/api/products", async (req, res) => {
-  await db.read();
-  const products = db.data.products || [];
-  res.json(products);
-});
-
-// ============ مسارات الأدمن للمنتجات ============
-app.get("/api/admin/products", requireAdmin, async (req, res) => {
-  await db.read();
-  res.json(db.data.products || []);
-});
-
-app.post("/api/admin/products", requireAdmin, async (req, res) => {
-  const { name, price, category, image, description } = req.body;
-
-  if (!name || !price) {
-    return res
-      .status(400)
-      .json({ success: false, message: "الاسم والسعر مطلوبان" });
+// ===== API: إدارة المنتجات (للأدمن فقط) =====
+app.get("/api/admin/products", async (req, res) => {
+  try {
+    const db = await readDB();
+    const user = db.users.find((u) => u.id === req.session.userId);
+    if (!user || user.role !== "admin") {
+      return res.status(403).json({ message: "غير مصرح" });
+    }
+    res.json(db.products || []);
+  } catch (err) {
+    console.error("GET /api/admin/products error:", err);
+    res.status(500).json({ message: "خطأ في السيرفر" });
   }
-
-  await db.read();
-
-  const newProduct = {
-    id: Date.now(),
-    name,
-    price: Number(price),
-    category: category || "other",
-    categoryLabel: "",
-    image: image || "",
-    description: description || ""
-  };
-
-  db.data.products.push(newProduct);
-  await db.write();
-
-  res.json({ success: true, product: newProduct });
 });
 
-app.delete("/api/admin/products/:id", requireAdmin, async (req, res) => {
-  const id = Number(req.params.id);
-  await db.read();
+app.post("/api/admin/products", async (req, res) => {
+  try {
+    const db = await readDB();
+    const user = db.users.find((u) => u.id === req.session.userId);
+    if (!user || user.role !== "admin") {
+      return res.status(403).json({ message: "غير مصرح" });
+    }
 
-  const before = db.data.products.length;
-  db.data.products = db.data.products.filter((p) => p.id !== id);
-  const after = db.data.products.length;
+    const { name, price, category, image, description } = req.body || {};
+    if (!name || !price) {
+      return res
+        .status(400)
+        .json({ message: "اسم المنتج والسعر مطلوبان" });
+    }
 
-  if (before === after) {
-    return res.status(404).json({ success: false, message: "المنتج غير موجود" });
+    const newId = db.products.length
+      ? db.products[db.products.length - 1].id + 1
+      : 1;
+
+    const newProduct = {
+      id: newId,
+      name,
+      price: Number(price),
+      category: category || "other",
+      categoryLabel: category || "منتجات أخرى",
+      image: image || "product.jpg",
+      description: description || "",
+    };
+
+    db.products.push(newProduct);
+    await writeDB(db);
+
+    res.status(201).json(newProduct);
+  } catch (err) {
+    console.error("POST /api/admin/products error:", err);
+    res.status(500).json({ message: "خطأ في السيرفر" });
   }
-
-  await db.write();
-  res.json({ success: true });
 });
 
-// ============ مسارات الأدمن للمستخدمين ============
-app.get("/api/admin/users", requireAdmin, async (req, res) => {
-  await db.read();
-  const users = db.data.users.map((u) => ({
-    id: u.id,
-    name: u.name,
-    email: u.email,
-    role: u.role,
-    password: u.password // للتجربة فقط – لا تُستخدم في مشروع حقيقي
-  }));
-  res.json(users);
+app.delete("/api/admin/products/:id", async (req, res) => {
+  try {
+    const db = await readDB();
+    const user = db.users.find((u) => u.id === req.session.userId);
+    if (!user || user.role !== "admin") {
+      return res.status(403).json({ message: "غير مصرح" });
+    }
+
+    const id = Number(req.params.id);
+    const index = db.products.findIndex((p) => p.id === id);
+    if (index === -1) return res.status(404).json({ message: "غير موجود" });
+
+    db.products.splice(index, 1);
+    await writeDB(db);
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("DELETE /api/admin/products/:id error:", err);
+    res.status(500).json({ message: "خطأ في السيرفر" });
+  }
 });
 
-// أي مسار غير معروف → رجّع index.html (للواجهة الأمامية)
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-// ============ تشغيل السيرفر ============
-initDB().then(() => {
-  app.listen(PORT, () => {
-    console.log("Server running on port", PORT);
-  });
+// ===== تشغيل السيرفر =====
+app.listen(PORT, async () => {
+  await seedDatabaseIfNeeded();
+  console.log(`Server running on port ${PORT}`);
 });
