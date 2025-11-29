@@ -144,9 +144,7 @@
 
         <div id="activeFilters" class="active-filters"></div>
 
-        <div id="productsGrid" class="products-grid">
-          <!-- المنتجات تُضاف هنا بالجافاسكربت -->
-        </div>
+        <div id="productsGrid" class="products-grid"></div>
       </main>
     </div>
 
@@ -177,7 +175,7 @@
       let maxPrice = null;
 
       function formatPrice(price) {
-        return price.toLocaleString("ar-SA", {
+        return Number(price).toLocaleString("ar-SA", {
           minimumFractionDigits: 0,
         });
       }
@@ -209,12 +207,12 @@
       function applyFilters() {
         let list = [...allProducts];
 
-        // تصفية حسب التصنيف
+        // تصنيف
         if (currentCategory !== "all") {
           list = list.filter((p) => p.category === currentCategory);
         }
 
-        // تصفية حسب البحث
+        // بحث
         if (searchQuery) {
           const q = searchQuery.toLowerCase();
           list = list.filter((p) => {
@@ -227,7 +225,7 @@
           });
         }
 
-        // تصفية حسب السعر
+        // سعر
         if (minPrice !== null) {
           list = list.filter((p) => Number(p.price) >= minPrice);
         }
@@ -263,10 +261,7 @@
           card.innerHTML = `
             <div class="product-image">
               <div class="product-image-placeholder">
-                ${p.name
-                  .split(" ")
-                  .slice(0, 2)
-                  .join(" ")}
+                ${p.name.split(" ").slice(0, 2).join(" ")}
               </div>
             </div>
             <div class="product-content">
@@ -291,7 +286,7 @@
           const res = await fetch(`${API_BASE}/api/products`);
           const data = await res.json();
           allProducts = data || [];
-          applyFilters(); // يعرض كل شيء مبدئياً
+          applyFilters();
         } catch (err) {
           console.error(err);
           productsGrid.innerHTML =
@@ -299,7 +294,7 @@
         }
       }
 
-      // تغيير التصنيف من القائمة الجانبية
+      // تغيير التصنيف
       sidebarButtons.forEach((btn) => {
         btn.addEventListener("click", () => {
           sidebarButtons.forEach((b) => b.classList.remove("active"));
@@ -310,12 +305,12 @@
         });
       });
 
-      // بحث بالكلمة
+      // بحث
       searchInput.addEventListener("input", () => {
         searchQuery = searchInput.value.trim();
       });
 
-      // تطبيق فلتر السعر + البحث (بالزر)
+      // تطبيق فلتر السعر + البحث
       applyFiltersBtn.addEventListener("click", () => {
         const minVal = minPriceInput.value;
         const maxVal = maxPriceInput.value;
@@ -326,7 +321,7 @@
         applyFilters();
       });
 
-      // إعادة تعيين كل الفلاتر
+      // إعادة تعيين
       resetFiltersBtn.addEventListener("click", () => {
         currentCategory = "all";
         searchQuery = "";
@@ -345,7 +340,6 @@
         applyFilters();
       });
 
-      // تطبيق الفلتر بالإنتر في أي حقل
       [searchInput, minPriceInput, maxPriceInput].forEach((el) => {
         el.addEventListener("keydown", (e) => {
           if (e.key === "Enter") {

@@ -1,3 +1,5 @@
+// server.js
+
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
@@ -26,7 +28,7 @@ function createInitialProducts() {
         price: priceStart + i * 10,
         category,
         image: `${imagePrefix}${i}.jpg`,
-        description: `منتج ${baseName} رقم ${i} بجودة عالية مناسب للاستخدام اليومي.`
+        description: `منتج ${baseName} رقم ${i} بجودة عالية مناسب للاستخدام اليومي.`,
       });
     }
   }
@@ -171,12 +173,10 @@ app.post("/api/register", async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "الاسم والإيميل وكلمة المرور مطلوبة",
-      });
+    return res.status(400).json({
+      success: false,
+      message: "الاسم والإيميل وكلمة المرور مطلوبة",
+    });
   }
 
   await db.read();
@@ -213,12 +213,10 @@ app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "الرجاء إدخال البريد وكلمة المرور",
-      });
+    return res.status(400).json({
+      success: false,
+      message: "الرجاء إدخال البريد وكلمة المرور",
+    });
   }
 
   await db.read();
@@ -234,14 +232,15 @@ app.post("/api/login", async (req, res) => {
       .json({ success: false, message: "بيانات الدخول غير صحيحة" });
   }
 
-  const token = `token-${user.id}-${Date.now()}`;
-
   res.json({
     success: true,
     message: "تم تسجيل الدخول بنجاح",
-    name: user.name,
-    isAdmin: user.role === "admin",
-    token,
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role, // "admin" أو "user"
+    },
   });
 });
 
