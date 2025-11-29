@@ -3,257 +3,322 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const session = require("express-session");
 
-// === LOWDB Setup ===
 const { Low } = require("lowdb");
 const { JSONFile } = require("lowdb/node");
 
+// ===== إعداد lowdb =====
 const dbFile = path.join(__dirname, "db.json");
 const adapter = new JSONFile(dbFile);
+const db = new Low(adapter);
 
-// default data object required by lowdb v6
-const defaultData = { users: [], products: [] };
-const db = new Low(adapter, defaultData);
+// ===== إنشاء تطبيق Express =====
+const app = express();
+const PORT = process.env.PORT || 10000;
 
-// helper to generate 100 products in 10 different categories
-function createInitialProducts() {
+// Middleware
+app.use(
+  cors({
+    origin: true, // نفس الدومين
+    credentials: true,
+  })
+);
+
+app.use(express.json());
+
+app.use(
+  session({
+    secret: "meshari-tech-store-secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: false, // على Render المجاني هذا مناسب
+      maxAge: 7 * 24 * 60 * 60 * 1000, // أسبوع
+    },
+  })
+);
+
+app.use(express.static(path.join(__dirname, "public")));
+
+// ===== توليد منتجات تجريبية =====
+function generateSeedProducts() {
+  const categories = [
+    {
+      key: "laptops",
+      label: "إلكترونيات - لابتوبات",
+      baseName: "Laptop Pro",
+    },
+    {
+      key: "phones",
+      label: "إلكترونيات - جوالات",
+      baseName: "Smart Phone",
+    },
+    {
+      key: "tablets",
+      label: "إلكترونيات - تابلت",
+      baseName: "Tab Plus",
+    },
+    {
+      key: "monitors",
+      label: "إلكترونيات - شاشات",
+      baseName: "Ultra Monitor",
+    },
+    {
+      key: "audio",
+      label: "إلكترونيات - سماعات",
+      baseName: "Sound Beats",
+    },
+    {
+      key: "consoles",
+      label: "أجهزة الترفيه - كونسل",
+      baseName: "Game Station",
+    },
+    {
+      key: "accessories",
+      label: "إكسسوارات اللعب",
+      baseName: "Gaming Accessory",
+    },
+    {
+      key: "subscriptions",
+      label: "اشتراكات المشاهدة",
+      baseName: "Streaming Plan",
+    },
+    {
+      key: "storage",
+      label: "التخزين",
+      baseName: "SSD Drive",
+    },
+    {
+      key: "network",
+      label: "الشبكات",
+      baseName: "WiFi Router",
+    },
+  ];
+
   const products = [];
   let id = 1;
 
-  function addBatch(category, baseName, priceStart, imagePrefix) {
+  categories.forEach((cat) => {
     for (let i = 1; i <= 10; i++) {
+      const basePrice = 1500 + Math.floor(Math.random() * 2500);
       products.push({
         id: id++,
-        name: `${baseName} ${i}`,
-        price: priceStart + i * 10,
-        category,
-        image: `${imagePrefix}${i}.jpg`,
-        description: `منتج ${baseName} رقم ${i} بجودة عالية مناسب للاستخدام اليومي.`,
+        name: `${cat.baseName} ${i}`,
+        price: basePrice + i * 10,
+        category: cat.key,
+        section: cat.label,
+        image: `${cat.key}${((i - 1) % 3) + 1}.jpg`,
+        description: `منتج ${cat.baseName} رقم ${i} من فئة ${cat.label}، مناسب للاستخدام اليومي.`,
       });
     }
-  }
-
-  // 1–10: إلكترونيات - لابتوبات
-  addBatch("إلكترونيات - لابتوبات", "Laptop Pro", 2499, "laptop");
-
-  // 11–20: إلكترونيات - جوالات
-  addBatch("إلكترونيات - جوالات", "Smartphone X", 1499, "phone");
-
-  // 21–30: إلكترونيات - سماعات
-  addBatch("إلكترونيات - سماعات", "Wireless Headphones", 299, "headphones");
-
-  // 31–40: أجهزة ترفيه (Sony / Xbox)
-  addBatch(
-    "إلكترونيات - أجهزة ترفيه (Sony / Xbox)",
-    "Gaming Console",
-    1899,
-    "console"
-  );
-
-  // 41–50: اشتراكات تطبيقات مشاهدة
-  addBatch(
-    "اشتراكات - تطبيقات مشاهدة",
-    "Streaming Subscription",
-    29,
-    "subscription"
-  );
-
-  // 51–60: شاشات عرض
-  addBatch("إلكترونيات - شاشات عرض", "4K Monitor", 799, "monitor");
-
-  // 61–70: ساعات ذكية
-  addBatch("إلكترونيات - ساعات ذكية", "Smart Watch", 399, "watch");
-
-  // 71–80: لوحات مفاتيح وفأرات للألعاب
-  addBatch(
-    "إلكترونيات - لوحات مفاتيح وفأرات",
-    "Gaming Keyboard & Mouse",
-    149,
-    "peripheral"
-  );
-
-  // 81–90: أجهزة شبكة (راوتر / واي فاي)
-  addBatch(
-    "إلكترونيات - أجهزة شبكة (راوتر/واي فاي)",
-    "WiFi Router",
-    199,
-    "router"
-  );
-
-  // 91–100: إكسسوارات تقنية (كابلات / حافظات)
-  addBatch(
-    "إلكترونيات - إكسسوارات (كابلات وحافظات)",
-    "Tech Accessory",
-    39,
-    "accessory"
-  );
+  });
 
   return products;
 }
 
-// initialize DB once
+// ===== تهيئة قاعدة البيانات =====
 async function initDB() {
   await db.read();
-  db.data ||= { users: [], products: [] };
 
-  // seed admin user if missing
-  if (!Array.isArray(db.data.users) || db.data.users.length === 0) {
-    db.data.users = [
-      {
-        id: 1,
-        name: "Admin",
-        email: "admin@example.com",
-        password: "admin123", // تجربة فقط
-        role: "admin",
-      },
-    ];
+  if (!db.data) {
+    db.data = { products: [], users: [] };
   }
 
-  // seed 100 products only if products array فارغة
-  if (!Array.isArray(db.data.products) || db.data.products.length === 0) {
-    db.data.products = createInitialProducts();
+  if (!Array.isArray(db.data.products)) db.data.products = [];
+  if (!Array.isArray(db.data.users)) db.data.users = [];
+
+  // لو ما فيه منتجات → نولّد ١٠٠ منتج
+  if (db.data.products.length === 0) {
+    db.data.products = generateSeedProducts();
+    console.log("Seeded 100 products 🌟");
+  }
+
+  // تأكد فيه أدمن واحد على الأقل
+  const hasAdmin = db.data.users.some((u) => u.role === "admin");
+  if (!hasAdmin) {
+    db.data.users.push({
+      id: 1,
+      name: "Admin",
+      email: "admin@store.com",
+      password: "admin123", // للتجربة فقط
+      role: "admin",
+    });
+    console.log("Created default admin user (admin@store.com / admin123)");
   }
 
   await db.write();
   console.log("Database initialized ✅");
 }
 
-initDB().catch((err) => {
-  console.error("Error initializing DB:", err);
-});
+// استدعاء التهيئة
+initDB().catch((err) => console.error("DB init error:", err));
 
-// === Server Setup ===
-const app = express();
-const PORT = process.env.PORT || 10000;
+// ===== ميدل وير للمصادقة =====
+async function getCurrentUser(req) {
+  await db.read();
+  const userId = req.session.userId;
+  if (!userId) return null;
+  return db.data.users.find((u) => u.id === userId) || null;
+}
 
-app.use(cors());
-app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
+async function requireAdmin(req, res, next) {
+  const user = await getCurrentUser(req);
+  if (!user) {
+    return res.status(401).json({ message: "يجب تسجيل الدخول أولا" });
+  }
+  if (user.role !== "admin") {
+    return res.status(403).json({ message: "مسموح للمشرف فقط" });
+  }
+  req.user = user;
+  next();
+}
 
-// === API: Products ===
+// ===== Routes =====
 
-// GET all products
+// المنتجات (للمتجر)
 app.get("/api/products", async (req, res) => {
   await db.read();
   res.json(db.data.products || []);
 });
 
-// ADD new product (for admin panel)
-app.post("/api/products", async (req, res) => {
-  const { name, price, category, image, description } = req.body;
-
-  if (!name || !price || !category) {
-    return res
-      .status(400)
-      .json({ success: false, message: "الاسم والسعر والتصنيف حقول مطلوبة" });
-  }
-
-  await db.read();
-  db.data.products ||= [];
-
-  const newProduct = {
-    id: db.data.products.length
-      ? Math.max(...db.data.products.map((p) => p.id || 0)) + 1
-      : 1,
-    name,
-    price: Number(price),
-    category,
-    image: image || "",
-    description: description || "",
-  };
-
-  db.data.products.push(newProduct);
-  await db.write();
-
-  res.json({ success: true, product: newProduct });
-});
-
-// === API: Register ===
+// تسجيل مستخدم جديد
 app.post("/api/register", async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password } = req.body || {};
 
   if (!name || !email || !password) {
-    return res.status(400).json({
-      success: false,
-      message: "الاسم والإيميل وكلمة المرور مطلوبة",
-    });
+    return res.json({ success: false, message: "البيانات غير مكتملة" });
   }
 
   await db.read();
-  db.data.users ||= [];
-
   const exists = db.data.users.find((u) => u.email === email);
   if (exists) {
-    return res
-      .status(400)
-      .json({ success: false, message: "هذا الإيميل مسجّل من قبل" });
+    return res.json({ success: false, message: "هذا البريد مستخدم مسبقًا" });
   }
 
-  const newUser = {
-    id: db.data.users.length
-      ? Math.max(...db.data.users.map((u) => u.id || 0)) + 1
-      : 1,
+  const nextId =
+    db.data.users.reduce((max, u) => Math.max(max, u.id || 0), 0) + 1;
+
+  db.data.users.push({
+    id: nextId,
     name,
     email,
-    password, // بدون تشفير لأغراض التعلم فقط
+    password, // بدون تشفير (للتجربة فقط)
     role: "user",
-  };
+  });
 
-  db.data.users.push(newUser);
   await db.write();
 
   res.json({
     success: true,
-    message: "تم إنشاء الحساب بنجاح، يمكنك تسجيل الدخول الآن",
+    message: "تم إنشاء الحساب بنجاح",
   });
 });
 
-// === API: Login ===
+// تسجيل الدخول
 app.post("/api/login", async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({
-      success: false,
-      message: "الرجاء إدخال البريد وكلمة المرور",
-    });
-  }
+  const { email, password } = req.body || {};
 
   await db.read();
-  db.data.users ||= [];
-
   const user = db.data.users.find(
     (u) => u.email === email && u.password === password
   );
 
   if (!user) {
-    return res
-      .status(401)
-      .json({ success: false, message: "بيانات الدخول غير صحيحة" });
+    return res.json({
+      success: false,
+      message: "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+    });
   }
+
+  req.session.userId = user.id;
 
   res.json({
     success: true,
-    message: "تم تسجيل الدخول بنجاح",
+    name: user.name,
+    isAdmin: user.role === "admin",
+    token: "session", // رمز صوري – نعتمد على الـ session
+  });
+});
+
+// معلومات المستخدم الحالي
+app.get("/api/auth/me", async (req, res) => {
+  const user = await getCurrentUser(req);
+  if (!user) return res.json({ user: null });
+
+  res.json({
     user: {
       id: user.id,
-      name: user.name,
+      username: user.name,
       email: user.email,
-      role: user.role, // "admin" أو "user"
+      role: user.role,
     },
   });
 });
 
-// === API: Users list for admin ===
-app.get("/api/users", async (req, res) => {
-  await db.read();
-  db.data.users ||= [];
-
-  const users = db.data.users.map(({ password, ...rest }) => rest);
-  res.json(users);
+// تسجيل الخروج
+app.post("/api/auth/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.json({ success: true });
+  });
 });
 
-// === Start Server ===
+// ===== API خاصة بالادمن لإدارة المنتجات =====
+
+// قراءة المنتجات (للأدمن)
+app.get("/api/admin/products", requireAdmin, async (req, res) => {
+  await db.read();
+  res.json(db.data.products || []);
+});
+
+// إضافة منتج جديد
+app.post("/api/admin/products", requireAdmin, async (req, res) => {
+  const { name, price, category, image, description } = req.body || {};
+
+  if (!name || !price) {
+    return res
+      .status(400)
+      .json({ message: "الاسم والسعر حقول مطلوبة", success: false });
+  }
+
+  await db.read();
+
+  const nextId =
+    db.data.products.reduce((max, p) => Math.max(max, p.id || 0), 0) + 1;
+
+  const product = {
+    id: nextId,
+    name,
+    price: Number(price),
+    category: category || "other",
+    image: image || "",
+    description: description || "",
+  };
+
+  db.data.products.push(product);
+  await db.write();
+
+  res.status(201).json(product);
+});
+
+// حذف منتج
+app.delete("/api/admin/products/:id", requireAdmin, async (req, res) => {
+  const id = Number(req.params.id);
+  await db.read();
+
+  const index = db.data.products.findIndex((p) => p.id === id);
+  if (index === -1) {
+    return res.status(404).json({ message: "المنتج غير موجود" });
+  }
+
+  db.data.products.splice(index, 1);
+  await db.write();
+
+  res.json({ success: true });
+});
+
+// ===== تشغيل السيرفر =====
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
 });
