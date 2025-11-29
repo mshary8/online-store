@@ -11,7 +11,10 @@ const { JSONFile } = require("lowdb/node");
 // ===== إعداد lowdb =====
 const dbFile = path.join(__dirname, "db.json");
 const adapter = new JSONFile(dbFile);
-const db = new Low(adapter);
+
+// هنا نمرر الـ default data عشان ما يطلع خطأ "missing default data"
+const defaultData = { products: [], users: [] };
+const db = new Low(adapter, defaultData);
 
 // ===== إنشاء تطبيق Express =====
 const app = express();
@@ -20,7 +23,7 @@ const PORT = process.env.PORT || 10000;
 // Middleware
 app.use(
   cors({
-    origin: true, // نفس الدومين
+    origin: true,
     credentials: true,
   })
 );
@@ -34,8 +37,8 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: false, // على Render المجاني هذا مناسب
-      maxAge: 7 * 24 * 60 * 60 * 1000, // أسبوع
+      secure: false,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     },
   })
 );
@@ -45,56 +48,16 @@ app.use(express.static(path.join(__dirname, "public")));
 // ===== توليد منتجات تجريبية =====
 function generateSeedProducts() {
   const categories = [
-    {
-      key: "laptops",
-      label: "إلكترونيات - لابتوبات",
-      baseName: "Laptop Pro",
-    },
-    {
-      key: "phones",
-      label: "إلكترونيات - جوالات",
-      baseName: "Smart Phone",
-    },
-    {
-      key: "tablets",
-      label: "إلكترونيات - تابلت",
-      baseName: "Tab Plus",
-    },
-    {
-      key: "monitors",
-      label: "إلكترونيات - شاشات",
-      baseName: "Ultra Monitor",
-    },
-    {
-      key: "audio",
-      label: "إلكترونيات - سماعات",
-      baseName: "Sound Beats",
-    },
-    {
-      key: "consoles",
-      label: "أجهزة الترفيه - كونسل",
-      baseName: "Game Station",
-    },
-    {
-      key: "accessories",
-      label: "إكسسوارات اللعب",
-      baseName: "Gaming Accessory",
-    },
-    {
-      key: "subscriptions",
-      label: "اشتراكات المشاهدة",
-      baseName: "Streaming Plan",
-    },
-    {
-      key: "storage",
-      label: "التخزين",
-      baseName: "SSD Drive",
-    },
-    {
-      key: "network",
-      label: "الشبكات",
-      baseName: "WiFi Router",
-    },
+    { key: "laptops", label: "إلكترونيات - لابتوبات", baseName: "Laptop Pro" },
+    { key: "phones", label: "إلكترونيات - جوالات", baseName: "Smart Phone" },
+    { key: "tablets", label: "إلكترونيات - تابلت", baseName: "Tab Plus" },
+    { key: "monitors", label: "إلكترونيات - شاشات", baseName: "Ultra Monitor" },
+    { key: "audio", label: "إلكترونيات - سماعات", baseName: "Sound Beats" },
+    { key: "consoles", label: "أجهزة الترفيه - كونسل", baseName: "Game Station" },
+    { key: "accessories", label: "إكسسوارات اللعب", baseName: "Gaming Accessory" },
+    { key: "subscriptions", label: "اشتراكات المشاهدة", baseName: "Streaming Plan" },
+    { key: "storage", label: "التخزين", baseName: "SSD Drive" },
+    { key: "network", label: "الشبكات", baseName: "WiFi Router" },
   ];
 
   const products = [];
@@ -122,9 +85,8 @@ function generateSeedProducts() {
 async function initDB() {
   await db.read();
 
-  if (!db.data) {
-    db.data = { products: [], users: [] };
-  }
+  // lowdb v7 يضمن وجود db.data لكن نتأكد من نوع الحقول
+  if (!db.data) db.data = { ...defaultData };
 
   if (!Array.isArray(db.data.products)) db.data.products = [];
   if (!Array.isArray(db.data.users)) db.data.users = [];
@@ -152,10 +114,10 @@ async function initDB() {
   console.log("Database initialized ✅");
 }
 
-// استدعاء التهيئة
+// شغّل التهيئة
 initDB().catch((err) => console.error("DB init error:", err));
 
-// ===== ميدل وير للمصادقة =====
+// ===== دوال المساعدة للمستخدم الحالي =====
 async function getCurrentUser(req) {
   await db.read();
   const userId = req.session.userId;
@@ -204,7 +166,7 @@ app.post("/api/register", async (req, res) => {
     id: nextId,
     name,
     email,
-    password, // بدون تشفير (للتجربة فقط)
+    password, // بدون تشفير (تجربة)
     role: "user",
   });
 
@@ -238,7 +200,7 @@ app.post("/api/login", async (req, res) => {
     success: true,
     name: user.name,
     isAdmin: user.role === "admin",
-    token: "session", // رمز صوري – نعتمد على الـ session
+    token: "session",
   });
 });
 
@@ -264,15 +226,15 @@ app.post("/api/auth/logout", (req, res) => {
   });
 });
 
-// ===== API خاصة بالادمن لإدارة المنتجات =====
+// ===== API الأدمن =====
 
-// قراءة المنتجات (للأدمن)
+// قراءة المنتجات
 app.get("/api/admin/products", requireAdmin, async (req, res) => {
   await db.read();
   res.json(db.data.products || []);
 });
 
-// إضافة منتج جديد
+// إضافة منتج
 app.post("/api/admin/products", requireAdmin, async (req, res) => {
   const { name, price, category, image, description } = req.body || {};
 
