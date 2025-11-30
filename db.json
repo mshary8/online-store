@@ -8,6 +8,251 @@
       "role": "admin"
     }
   ],
-  "products": [],
+  "products": [
+    {
+      "id": 1,
+      "name": "Laptop Pro 1",
+      "price": 2999,
+      "category": "laptops",
+      "image": "https://images.pexels.com/photos/18105/pexels-photo.jpg",
+      "description": "لابتوب احترافي للاستخدام اليومي من Al-Mashari Electronics."
+    },
+    {
+      "id": 2,
+      "name": "Laptop Pro 2",
+      "price": 3499,
+      "category": "laptops",
+      "image": "https://images.pexels.com/photos/18104/pexels-photo.jpg",
+      "description": "لابتوب مناسب للطلاب والأعمال المكتبية."
+    },
+    {
+      "id": 3,
+      "name": "Laptop Pro 3",
+      "price": 3999,
+      "category": "laptops",
+      "image": "https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg",
+      "description": "لابتوب نحيف مع بطارية تدوم طويلًا."
+    },
+    {
+      "id": 4,
+      "name": "Laptop Pro 4",
+      "price": 4599,
+      "category": "laptops",
+      "image": "https://images.pexels.com/photos/18106/pexels-photo.jpg",
+      "description": "لابتوب بقدرات مناسبة للبرمجة والتصميم الخفيف."
+    },
+    {
+      "id": 5,
+      "name": "Laptop Pro 5",
+      "price": 4999,
+      "category": "laptops",
+      "image": "https://images.pexels.com/photos/18108/pexels-photo.jpg",
+      "description": "لابتوب عالي الأداء يناسب العمل المتواصل."
+    },
+    {
+      "id": 6,
+      "name": "Laptop Pro 6",
+      "price": 5599,
+      "category": "laptops",
+      "image": "https://images.pexels.com/photos/18111/pexels-photo.jpg",
+      "description": "لابتوب مميز لعشاق الإنتاجية والتنقل."
+    },
+
+    {
+      "id": 7,
+      "name": "Smart Phone 1",
+      "price": 1999,
+      "category": "phones",
+      "image": "https://images.pexels.com/photos/47261/pexels-photo-47261.jpeg",
+      "description": "جوال ذكي بشاشة واضحة وكاميرا جيدة."
+    },
+    {
+      "id": 8,
+      "name": "Smart Phone 2",
+      "price": 2299,
+      "category": "phones",
+      "image": "https://images.pexels.com/photos/1092644/pexels-photo-1092644.jpeg",
+      "description": "هاتف مناسب للاستخدام اليومي وتطبيقات التواصل."
+    },
+    {
+      "id": 9,
+      "name": "Smart Phone 3",
+      "price": 2599,
+      "category": "phones",
+      "image": "https://images.pexels.com/photos/50614/pexels-photo-50614.jpeg",
+      "description": "هاتف بأداء مستقر وبطارية ممتازة."
+    },
+    {
+      "id": 10,
+      "name": "Smart Phone 4",
+      "price": 2799,
+      "category": "phones",
+      "image": "https://images.pexels.com/photos/1289947/pexels-photo-1289947.jpeg",
+      "description": "هاتف بكاميرا عالية الدقة وتصميم أنيق."
+    },
+    {
+      "id": 11,
+      "name": "Smart Phone 5",
+      "price": 2999,
+      "category": "phones",
+      "image": "https://images.pexels.com/photos/6078122/pexels-photo-6078122.jpeg",
+      "description": "هاتف بمواصفات متوازنة وسعر مناسب."
+    },
+    {
+      "id": 12,
+      "name": "Smart Phone 6",
+      "price": 3499,
+      "category": "phones",
+      "image": "https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg",
+      "description": "هاتف لعشاق الأداء والتطبيقات الثقيلة."
+    },
+
+    {
+      "id": 13,
+      "name": "Wireless Headphones 1",
+      "price": 299,
+      "category": "audio",
+      "image": "https://images.pexels.com/photos/3394664/pexels-photo-3394664.jpeg",
+      "description": "سماعات لاسلكية مريحة للاستماع للموسيقى."
+    },
+    {
+      "id": 14,
+      "name": "Wireless Headphones 2",
+      "price": 399,
+      "category": "audio",
+      "image": "https://images.pexels.com/photos/373945/pexels-photo-373945.jpeg",
+      "description": "سماعات بعزل ضوضاء جيد للمكالمات والعمل."
+    },
+    {
+      "id": 15,
+      "name": "Wireless Headphones 3",
+      "price": 449,
+      "category": "audio",
+      "image": "https://images.pexels.com/photos/159643/headphones-music-earpads-earphones-159643.jpeg",
+      "description": "سماعات بجودة صوت ممتازة وتجربة استماع مريحة."
+    },
+    {
+      "id": 16,
+      "name": "Wireless Headphones 4",
+      "price": 499,
+      "category": "audio",
+      "image": "https://images.pexels.com/photos/374768/pexels-photo-374768.jpeg",
+      "description": "سماعات مناسبة للرياضة والحركة اليومية."
+    },
+    {
+      "id": 17,
+      "name": "Wireless Headphones 5",
+      "price": 549,
+      "category": "audio",
+      "image": "https://images.pexels.com/photos/845434/pexels-photo-845434.jpeg",
+      "description": "سماعات بتصميم أنيق وصوت واضح."
+    },
+    {
+      "id": 18,
+      "name": "Wireless Headphones 6",
+      "price": 599,
+      "category": "audio",
+      "image": "https://images.pexels.com/photos/1229861/pexels-photo-1229861.jpeg",
+      "description": "سماعات لعشاق التفاصيل الصوتية."
+    },
+
+    {
+      "id": 19,
+      "name": "Smart Watch 1",
+      "price": 399,
+      "category": "watches",
+      "image": "https://images.pexels.com/photos/267394/pexels-photo-267394.jpeg",
+      "description": "ساعة ذكية لمتابعة الخطوات والإشعارات."
+    },
+    {
+      "id": 20,
+      "name": "Smart Watch 2",
+      "price": 499,
+      "category": "watches",
+      "image": "https://images.pexels.com/photos/277406/pexels-photo-277406.jpeg",
+      "description": "ساعة أنيقة مع تتبع للنشاط اليومي."
+    },
+    {
+      "id": 21,
+      "name": "Smart Watch 3",
+      "price": 599,
+      "category": "watches",
+      "image": "https://images.pexels.com/photos/437037/pexels-photo-437037.jpeg",
+      "description": "ساعة مثالية للرياضة والصحة."
+    },
+    {
+      "id": 22,
+      "name": "Smart Watch 4",
+      "price": 699,
+      "category": "watches",
+      "image": "https://images.pexels.com/photos/277592/pexels-photo-277592.jpeg",
+      "description": "ساعة بتصميم فاخر وشاشة واضحة."
+    },
+    {
+      "id": 23,
+      "name": "Smart Watch 5",
+      "price": 799,
+      "category": "watches",
+      "image": "https://images.pexels.com/photos/1908199/pexels-photo-1908199.jpeg",
+      "description": "ساعة ذكية بطارية تدوم لأيام."
+    },
+    {
+      "id": 24,
+      "name": "Smart Watch 6",
+      "price": 899,
+      "category": "watches",
+      "image": "https://images.pexels.com/photos/277593/pexels-photo-277593.jpeg",
+      "description": "ساعة تناسب العمل والمناسبات الرسمية."
+    },
+
+    {
+      "id": 25,
+      "name": "Office Printer 1",
+      "price": 499,
+      "category": "printers",
+      "image": "https://images.pexels.com/photos/442933/pexels-photo-442933.jpeg",
+      "description": "طابعة مكتبية صغيرة للمستندات اليومية."
+    },
+    {
+      "id": 26,
+      "name": "Office Printer 2",
+      "price": 699,
+      "category": "printers",
+      "image": "https://images.pexels.com/photos/1957478/pexels-photo-1957478.jpeg",
+      "description": "طابعة متعددة الوظائف (طباعة، نسخ، مسح)."
+    },
+    {
+      "id": 27,
+      "name": "Office Printer 3",
+      "price": 899,
+      "category": "printers",
+      "image": "https://images.pexels.com/photos/268460/pexels-photo-268460.jpeg",
+      "description": "طابعة عالية الجودة للمكاتب الصغيرة."
+    },
+    {
+      "id": 28,
+      "name": "Office Printer 4",
+      "price": 1099,
+      "category": "printers",
+      "image": "https://images.pexels.com/photos/211783/pexels-photo-211783.jpeg",
+      "description": "طابعة سريعة مع دعم الشبكة."
+    },
+    {
+      "id": 29,
+      "name": "Office Printer 5",
+      "price": 1299,
+      "category": "printers",
+      "image": "https://images.pexels.com/photos/1957479/pexels-photo-1957479.jpeg",
+      "description": "طابعة موثوقة للاستخدام اليومي في المنزل والمكتب."
+    },
+    {
+      "id": 30,
+      "name": "Office Printer 6",
+      "price": 1499,
+      "category": "printers",
+      "image": "https://images.pexels.com/photos/218445/pexels-photo-218445.jpeg",
+      "description": "طابعة احترافية لمستندات بجودة عالية."
+    }
+  ],
   "orders": []
 }
